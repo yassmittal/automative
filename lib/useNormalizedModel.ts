@@ -10,6 +10,7 @@ import {
   type Object3D,
   type Plane,
 } from "three";
+import { createCastingMaterial, type FocusUniforms } from "./castingMaterial";
 
 /** Every module is rescaled to this size on its longest axis, so a second
  *  module with a completely different native scale still frames identically
@@ -29,6 +30,8 @@ export type NormalizedModel = {
   size: Vector3;
   /** Every mesh in the model, for raycasting and clipping-plane assignment. */
   meshes: Mesh[];
+  /** Drives the system-coloured wash on the casting. See FocusWash. */
+  focus: FocusUniforms;
 };
 
 /**
@@ -57,14 +60,14 @@ export function useNormalizedModel(url: string): NormalizedModel {
     const size = rawSize.clone().multiplyScalar(scale);
 
     // The source model is a single untextured casting sharing one material.
-    // Give it a proper machined-aluminium response so the studio environment
-    // has something to reflect — without this it renders as flat grey putty.
-    const material = new MeshStandardMaterial({
-      color: "#b6bab4",
-      metalness: 0.72,
-      roughness: 0.38,
-      envMapIntensity: 1.15,
-    });
+    // Everything that makes it read as metal — and every bit of colour it has
+    // — lives in there. See castingMaterial.ts.
+    const { material, focus } = createCastingMaterial();
+
+    // Deliberately a tight pool. The wash is a spotlight on the callout point,
+    // and a wide one starts making a claim about where the part ends — which
+    // this model cannot honestly support.
+    focus.uFocusRadius.value = (size.length() / 2) * 0.17;
 
     const meshes: Mesh[] = [];
     object.traverse((child) => {
@@ -92,6 +95,7 @@ export function useNormalizedModel(url: string): NormalizedModel {
       radius: size.length() / 2,
       size,
       meshes,
+      focus,
     };
   }, [scene]);
 }

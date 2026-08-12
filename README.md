@@ -53,6 +53,70 @@ rescaled on the CPU each frame, which is what keeps them steady during an orbit.
 The render loop is `frameloop="demand"`. Anything that animates must call
 `invalidate()`, or it will render one frame and stop.
 
+## How the colour works
+
+**Colour encodes the system, not the mood.** Each of the eight engine systems
+owns a hue in `SYSTEMS` (`content/types.ts`) — `color` for marks, `soft` for
+tints, `ink` for text — and wears it in four places: the legend group, the
+balloon on the model, the part card header and the leader-line label. That is
+the whole point of it: "all the blue ones are cooling" is a fact about the
+engine, not decoration.
+
+**Colour is never the only channel.** The callout number and the legend group
+heading each say the same thing on their own. Some pairs of the eight sit close
+under simulated colour blindness — 8.1 ΔE at worst, which is the target, not a
+comfortable margin — so the redundancy is load-bearing, not a nicety.
+
+**Green, red and orange are reserved.** Green means *correct*, red means
+*wrong*, and orange belongs to the section cut and nothing else. Reserving them
+is why the eight system hues are packed into the arc from 207° round to 356°
+plus a brass island at 83° — the wheel is genuinely that crowded, and lightness
+rather than hue does most of the separating.
+
+**The balloon palette lives in GLSL and does not read the CSS.** The hues reach
+the model through `Color` uniforms in `components/scene/balloonMaterial.ts` and
+`LOOKS` in `components/scene/Callouts.tsx`. Tailwind tokens cannot reach a
+shader, so a palette change made only in `globals.css` leaves every balloon on
+the engine wearing the old colour — the DOM goes bright and the model quietly
+does not. Change both.
+
+## Why the casting cannot be colour-coded
+
+The obvious next step — paint each part of the engine in its system colour — is
+not available, and it is worth knowing why before someone tries.
+
+The GLB is **one mesh, one primitive, one material, no UVs**. There are no
+sub-parts to assign colours to, and nothing to texture. The only way to
+partition it would be geometrically, by taking the nearest authored callout
+point for every fragment, and that paints wrong lumps: the radiator would take
+whichever anchor happened to be closest to it. Labelling the wrong lump is worse
+than not labelling it (see VERIFY.md), so the model is not partitioned.
+
+Instead the colour on the casting comes from two things that don't make a claim:
+
+- **What it reflects.** `Stage.tsx` is a gelled studio — a brass key panel down
+  one flank, a cold blueprint rim down the other, dim wrap panels behind so the
+  polished faces have something other than black to mirror. That is the whole
+  reason the engine reads as metal rather than grey putty, and it roughly
+  doubles the measured colour in the render without encoding anything.
+- **The focus wash.** While you are reading a part, `FocusWash` lights the
+  neighbourhood of that callout point in the system colour, scaled by the
+  pixel's own luminance so it colours the metal instead of painting over it. It
+  is a spotlight, not a boundary, and the radius is deliberately tight for
+  exactly that reason — widen it and it starts implying where the part ends.
+
+The wash follows `useAnnotatedId`, so it inherits that function's rules: nothing
+is lit while a quiz question is still open, and a reveal is washed in the quiz
+green rather than the part's system colour.
+
+Two things in the balloon shader are deliberate and easy to undo by accident. The ring
+fades more slowly than the white disc, because a balloon sits at 45% opacity
+whenever something else is selected and a flat fade turns the darker systems
+into the same mud. And `#include <colorspace_fragment>` is what makes the
+rendered pixels equal the tokens — a `ShaderMaterial` gets no output conversion
+of its own, so without it the balloons render the *linear* value of each hue and
+come out visibly darker than the legend swatch beside them.
+
 ## Authoring callout positions
 
 Never type coordinates by hand. Open `/?authoring=1`, pick a part in the panel,

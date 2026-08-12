@@ -10,13 +10,15 @@ import {
   Vector3,
   type Camera,
 } from "three";
-import type { Part } from "@/content/types";
+import type { Part, SystemId } from "@/content/types";
 
 /** A callout after it has been snapped onto the mesh. */
 export type Anchor = {
   id: string;
   callout: number;
   name: string;
+  /** Which system it belongs to, so the balloon can wear that colour. */
+  system: SystemId;
   /** Point on the surface, in normalized model space. */
   position: Vector3;
   /** Outward surface normal there. Drives the facing fade. */
@@ -81,6 +83,7 @@ export function snapToSurface(
         id: part.id,
         callout: part.callout,
         name: part.name,
+        system: part.system,
         position: authored,
         normal: outward.clone(),
       };
@@ -100,6 +103,7 @@ export function snapToSurface(
       id: part.id,
       callout: part.callout,
       name: part.name,
+      system: part.system,
       position: hit.point.clone(),
       normal,
     };

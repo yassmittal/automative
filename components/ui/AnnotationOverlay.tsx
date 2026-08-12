@@ -21,6 +21,7 @@ export function AnnotationOverlay({
 }) {
   const annotatedId = useAnnotatedId();
   const part = module.parts.find((p) => p.id === annotatedId);
+  const look = part ? SYSTEMS[part.system] : null;
   const wrapper = useRef<HTMLDivElement>(null);
 
   // Redraw the leader from the balloon outward each time the subject changes.
@@ -47,8 +48,8 @@ export function AnnotationOverlay({
           ref={refs.line}
           points="0,0 0,0 0,0"
           fill="none"
-          stroke="var(--color-ink)"
-          strokeWidth="1"
+          stroke={look?.color ?? "var(--color-ink)"}
+          strokeWidth="1.25"
           strokeDasharray="120"
           vectorEffect="non-scaling-stroke"
         />
@@ -61,9 +62,9 @@ export function AnnotationOverlay({
       >
         {/* The label sits over the casting, so it carries its own ground
             rather than relying on the plate showing through behind it. */}
-        <div className="bg-paper/85 px-1.5 py-1 backdrop-blur-[2px]">
-          <div className="plate-tag mb-0.5">
-            {part ? SYSTEMS[part.system].label : ""}
+        <div className="bg-paper/90 px-1.5 py-1 backdrop-blur-[2px]">
+          <div className="plate-tag mb-0.5" style={{ color: look?.ink }}>
+            {look?.label ?? ""}
           </div>
           <div className="plate-display text-[15px] leading-none text-ink">
             {part?.name ?? ""}

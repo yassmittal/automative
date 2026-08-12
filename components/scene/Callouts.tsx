@@ -12,20 +12,43 @@ import {
   type ShaderMaterial,
   Vector3,
 } from "three";
+import { SYSTEMS, type SystemId } from "@/content/types";
 import { glyphTexture, type Anchor } from "@/lib/callouts";
 import { createBalloonMaterial } from "./balloonMaterial";
 import { useAtlas } from "@/lib/store";
 
 type BalloonLook = { ring: string; fill: string; ink: string };
 
+const PAPER = "#fcfcfb";
+
+/**
+ * The balloon palette.
+ *
+ * These are `Color` uniforms in a shader, not CSS — the Tailwind tokens in
+ * globals.css cannot reach them, so the values are mirrored here by hand.
+ * Change one side and you must change the other, or the DOM and the model
+ * will disagree about what colour a system is.
+ *
+ * The system hues themselves come from SYSTEMS, which is the source of truth;
+ * only the states that mean the same thing for every part are literals here.
+ */
 const LOOKS = {
-  idle: { ring: "#17607a", fill: "#f4f5f2", ink: "#17607a" },
-  quiet: { ring: "#7d847c", fill: "#f4f5f2", ink: "#7d847c" },
-  hover: { ring: "#171a17", fill: "#ffffff", ink: "#171a17" },
-  active: { ring: "#17607a", fill: "#17607a", ink: "#f4f5f2" },
-  correct: { ring: "#2e7d32", fill: "#2e7d32", ink: "#f4f5f2" },
-  wrong: { ring: "#c62828", fill: "#c62828", ink: "#f4f5f2" },
+  /** Quiz mode: every balloon that is not part of the answer goes grey, so a
+   *  system colour can never leak the answer. */
+  quiet: { ring: "#6e767c", fill: PAPER, ink: "#4a5157" },
+  correct: { ring: "#014b1a", fill: "#00752c", ink: PAPER },
+  wrong: { ring: "#940009", fill: "#cf2020", ink: PAPER },
 } satisfies Record<string, BalloonLook>;
+
+/** Idle / hover / selected, in the colour of the system the part belongs to. */
+function systemLooks(system: SystemId) {
+  const { color, ink } = SYSTEMS[system];
+  return {
+    idle: { ring: color, fill: PAPER, ink },
+    hover: { ring: ink, fill: "#ffffff", ink },
+    active: { ring: ink, fill: color, ink: PAPER },
+  };
+}
 
 const QUAD = new PlaneGeometry(1, 1);
 
@@ -65,6 +88,10 @@ export function Callouts({
     () => anchors.map((a) => createBalloonMaterial(glyphTexture(a.callout))),
     [anchors],
   );
+
+  // Resolved once per anchor rather than per frame — eight string lookups a
+  // frame across twelve balloons is pointless work in a render loop.
+  const looks = useMemo(() => anchors.map((a) => systemLooks(a.system)), [anchors]);
 
   useEffect(() => {
     return () => {
@@ -139,7 +166,8 @@ export function Callouts({
       const isHovered = hoveredId === anchor.id;
       const isSelected = selectedId === anchor.id;
 
-      let look: BalloonLook = LOOKS.idle;
+      const system = looks[i];
+      let look: BalloonLook = system.idle;
       let emphasis = 0;
       let pulse = 0;
 
@@ -165,14 +193,14 @@ export function Callouts({
             emphasis = 1;
           }
         } else if (isHovered) {
-          look = LOOKS.hover;
+          look = system.hover;
           emphasis = 1;
         }
       } else if (isSelected) {
-        look = LOOKS.active;
+        look = system.active;
         emphasis = 1;
       } else if (isHovered) {
-        look = LOOKS.hover;
+        look = system.hover;
         emphasis = 1;
       } else if (selectedId) {
         // Dim the rest of the plate once something is being read.

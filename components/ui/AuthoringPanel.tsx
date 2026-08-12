@@ -72,7 +72,7 @@ export function AuthoringPanel({
                 type="button"
                 onClick={() => onArm(armed ? null : part.id)}
                 className={`flex w-full flex-col gap-0.5 px-4 py-1.5 text-left transition-colors ${
-                  armed ? "bg-cut text-paper" : "hover:bg-annotate-soft"
+                  armed ? "bg-cut text-paper" : "hover:bg-wash"
                 }`}
               >
                 <span className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export function AuthoringPanel({
         <button
           type="button"
           onClick={onReset}
-          className="border border-hairline px-3 py-2 transition-colors hover:bg-annotate-soft"
+          className="border border-hairline px-3 py-2 transition-colors hover:bg-wash"
         >
           <span className="plate-tag">Reset</span>
         </button>

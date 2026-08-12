@@ -7,24 +7,34 @@
    manual: numbered callout balloons on the artwork, a legend keyed to
    those numbers, hairline rules, mono for anything that is data.
 
-   Palette is a machinist's bench, not a 3D-demo void: pale surface
-   plate, graphite ink, process cyan for annotation. Safety orange is
-   spent in exactly one place — the section cut.
+   A freshly printed plate rather than a faded one: a near-white sheet
+   sitting inside cool grey chrome — warm paper, cold instrument.
+
+   Colour carries meaning, not decoration. Each of the eight engine
+   systems owns a hue (see SYSTEMS in content/types.ts) and wears it in
+   the legend, on its balloon, on its part card and on its leader line.
+   Green and red are reserved for quiz verdicts and safety orange for
+   the section cut, and nothing else is allowed near them.
    ------------------------------------------------------------------ */
 
 @theme {
-  --color-paper: #edeeea;
-  --color-plate: #dfe1db;
-  --color-plate-deep: #cfd2ca;
-  --color-ink: #171a17;
-  --color-graphite: #5c625c;
-  --color-hairline: #b9beb6;
+  --color-paper: #fcfcfb;
+  --color-plate: #edf0f1;
+  --color-plate-deep: #dce0e2;
+  --color-ink: #14181c;
+  --color-graphite: #5a6268;
+  --color-hairline: #c3c9cc;
 
-  --color-annotate: #17607a;
-  --color-annotate-soft: #d3e2e8;
+  /* Neutral interaction wash. The accent colour belongs to whichever
+     system you are pointing at, so the chrome itself stays grey. */
+  --color-wash: #e2e8ea;
+
   --color-cut: #e4501e;
-  --color-correct: #2e7d32;
-  --color-wrong: #c62828;
+  /* The orange is a mark, not a text colour — 3.7:1. Anything set in
+     words next to the cut uses this instead. */
+  --color-cut-ink: #b8390c;
+  --color-correct: #00752c;
+  --color-wrong: #cf2020;
 
   --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
@@ -46,39 +56,50 @@ body {
   overscroll-behavior: none;
 }
 
-/* Utility label — the small caps mono tag used on every panel header.
-   Named for what it is in the manual, not what it looks like. */
-.plate-tag {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  line-height: 1;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--color-graphite);
+/* These live in the components layer so a Tailwind utility beside them still
+   wins. Unlayered, `.plate-tag`'s colour beat `text-paper` and every small-caps
+   label on a dark button silently rendered graphite-on-near-black. */
+@layer components {
+  /* Utility label — the small caps mono tag used on every panel header.
+     Named for what it is in the manual, not what it looks like. */
+  .plate-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+  }
+
+  /* Display face is Archivo's expanded width — part names read like the
+     cover of a parts catalog. Used only on part names and the wordmark. */
+  .plate-display {
+    font-family: var(--font-display);
+    font-variation-settings: "wdth" 112;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .hairline {
+    border-color: var(--color-hairline);
+  }
 }
 
-/* Display face is Archivo's expanded width — part names read like the
-   cover of a parts catalog. Used only on part names and the wordmark. */
-.plate-display {
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" 112;
-  font-weight: 700;
-  letter-spacing: -0.015em;
-}
-
-.hairline {
-  border-color: var(--color-hairline);
-}
-
-/* Keyboard focus is visible everywhere, on a light ground. */
+/* Keyboard focus has to stay visible on every surface the palette now
+   produces — including a selected legend row, whose background is a
+   saturated system colour. A dark outline alone would vanish there, so
+   the ring is two-tone: the box-shadow fills the outline's offset gap
+   with paper, and the ink outline sits outside it. Light ground or
+   dark, one of the two always reads. */
 :focus-visible {
-  outline: 2px solid var(--color-annotate);
+  outline: 2px solid var(--color-ink);
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-paper);
   border-radius: 1px;
 }
 
 ::selection {
-  background: var(--color-annotate);
+  background: var(--color-ink);
   color: var(--color-paper);
 }
 

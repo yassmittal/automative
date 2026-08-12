@@ -108,7 +108,7 @@ function PlateHeader({ module }: { module: Module }) {
             type="button"
             disabled={!ready}
             onClick={() => atlas.startQuiz(module.parts.map((p) => p.id))}
-            className="flex items-center gap-1.5 bg-ink px-3 py-1.5 text-paper transition-colors hover:bg-annotate disabled:opacity-40"
+            className="flex items-center gap-1.5 bg-ink px-3 py-1.5 text-paper transition-colors hover:bg-graphite disabled:opacity-40"
           >
             <GraduationCap size={13} strokeWidth={1.75} />
             <span className="plate-tag text-paper">Take the quiz</span>
@@ -117,7 +117,7 @@ function PlateHeader({ module }: { module: Module }) {
           <button
             type="button"
             onClick={atlas.exitQuiz}
-            className="flex items-center gap-1.5 border border-hairline px-3 py-1.5 transition-colors hover:bg-annotate-soft"
+            className="flex items-center gap-1.5 border border-hairline px-3 py-1.5 transition-colors hover:bg-wash"
           >
             <RotateCcw size={13} strokeWidth={1.75} />
             <span className="plate-tag">Back to the plate</span>

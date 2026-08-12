@@ -9,6 +9,7 @@ export function PartCard({ module }: { module: Module }) {
   const selectedId = useAtlas((s) => s.selectedId);
   const part = module.parts.find((p) => p.id === selectedId);
   const open = Boolean(part);
+  const look = part ? SYSTEMS[part.system] : null;
 
   return (
     <aside
@@ -17,11 +18,19 @@ export function PartCard({ module }: { module: Module }) {
         open ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0"
       }`}
     >
-      {part && (
-        <div className="plate-scroll pointer-events-auto m-3 max-h-[calc(100%-1.5rem)] overflow-y-auto border border-hairline bg-paper/95 shadow-[0_1px_24px_rgba(23,26,23,0.10)] backdrop-blur-sm">
-          <header className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-hairline bg-paper/95 px-5 pt-4 pb-3 backdrop-blur-sm">
+      {part && look && (
+        <div className="plate-scroll pointer-events-auto m-3 max-h-[calc(100%-1.5rem)] overflow-y-auto border border-hairline bg-paper/95 shadow-[0_1px_24px_rgba(20,24,28,0.10)] backdrop-blur-sm">
+          {/* The header wears the system's colour, so the card, the legend row
+              and the balloon on the model all agree at a glance. */}
+          <header
+            className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b-2 px-5 pt-4 pb-3 backdrop-blur-sm"
+            style={{
+              borderBottomColor: look.color,
+              background: `color-mix(in srgb, ${look.soft} 88%, transparent)`,
+            }}
+          >
             <div>
-              <div className="plate-tag">
+              <div className="plate-tag" style={{ color: look.ink }}>
                 {module.figure} · Callout{" "}
                 {String(part.callout).padStart(2, "0")}
               </div>
@@ -29,7 +38,7 @@ export function PartCard({ module }: { module: Module }) {
                 {part.name}
               </h2>
               <div className="mt-1.5 text-[12px] text-graphite">
-                {SYSTEMS[part.system].label} — {SYSTEMS[part.system].blurb}
+                {look.label} — {look.blurb}
               </div>
             </div>
 
@@ -37,7 +46,7 @@ export function PartCard({ module }: { module: Module }) {
               type="button"
               onClick={() => atlas.select(null)}
               aria-label="Close part details"
-              className="-mr-1 shrink-0 border border-hairline p-1.5 text-graphite transition-colors hover:bg-annotate-soft hover:text-ink"
+              className="-mr-1 shrink-0 border border-hairline bg-paper/70 p-1.5 text-graphite transition-colors hover:bg-paper hover:text-ink"
             >
               <X size={13} strokeWidth={1.75} />
             </button>

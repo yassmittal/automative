@@ -43,7 +43,7 @@ export function Viewport({
   const ready = useAtlas((s) => s.ready);
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[radial-gradient(120%_100%_at_50%_0%,#f4f5f2_0%,#e6e8e2_55%,#d7dad3_100%)]">
+    <div className="relative h-full w-full overflow-hidden bg-[radial-gradient(120%_100%_at_50%_0%,#fafcfc_0%,#eef1f3_52%,#d5dade_100%)]">
       <PlateGrid />
 
       <Canvas
@@ -89,7 +89,7 @@ function PlateGrid() {
       className="pointer-events-none absolute inset-0 opacity-[0.5]"
       style={{
         backgroundImage:
-          "linear-gradient(to right, #aab0a8 1px, transparent 1px), linear-gradient(to bottom, #aab0a8 1px, transparent 1px)",
+          "linear-gradient(to right, #9aa4ab 1px, transparent 1px), linear-gradient(to bottom, #9aa4ab 1px, transparent 1px)",
         backgroundSize: "56px 56px",
         maskImage:
           "radial-gradient(120% 90% at 50% 45%, transparent 30%, black 100%)",

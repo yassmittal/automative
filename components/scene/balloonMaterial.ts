@@ -50,7 +50,10 @@ const fragment = /* glsl */ `
   varying vec2 vUv;
 
   const float R  = 0.60;   // balloon radius inside the quad
-  const float TH = 0.085;  // ring thickness
+  // The ring is what carries the system colour, and at 0.085 of the quad it
+  // was a hairline that read as grey against a bright casting. Thick enough to
+  // hold its hue, thin enough to still look drawn rather than printed.
+  const float TH = 0.115;  // ring thickness
 
   void main() {
     vec2 p = (vUv - 0.5) * 2.0;
@@ -77,20 +80,36 @@ const fragment = /* glsl */ `
       glyph = texture2D(uGlyph, gUv).a;
     }
 
+    // The ring is the only part of the balloon carrying which system the part
+    // belongs to, so it is the last thing to go. Fading the white disc faster
+    // than the coloured ring keeps eight hues apart at the 45% opacity a
+    // balloon sits at while something else is selected — flat-fading all of it
+    // turns the darker systems into the same mud at that point.
+    float fillFade = uOpacity * uOpacity;
+    float ringFade = pow(uOpacity, 0.6);
+
     vec3 color = uFill;
-    float alpha = inner;
+    float alpha = inner * fillFade;
 
     color = mix(color, uInk, glyph * inner);
     color = mix(color, uRing, ring);
-    alpha = max(alpha, ring);
+    alpha = max(alpha, ring * ringFade);
 
     color = mix(color, uRing, outerRing);
-    alpha = max(alpha, outerRing * (0.75 - uPulse * 0.45));
+    alpha = max(alpha, outerRing * (0.75 - uPulse * 0.45) * ringFade);
 
-    alpha *= uOpacity;
     if (alpha < 0.004) discard;
 
     gl_FragColor = vec4(color, alpha);
+
+    // A ShaderMaterial writes gl_FragColor straight out — none of the output
+    // conversion a built-in material gets is applied for us. Three has already
+    // converted every Color uniform from sRGB into the linear working space,
+    // so without this the balloons render as the *linear* value of their hue:
+    // markedly darker and more saturated than the same token in the DOM. That
+    // mismatch is invisible until you hold the legend and the model side by
+    // side, which is exactly when it matters.
+    #include <colorspace_fragment>
   }
 `;
 
@@ -100,9 +119,11 @@ export function createBalloonMaterial(glyph: Texture) {
     fragmentShader: fragment,
     uniforms: {
       uGlyph: { value: glyph },
-      uRing: { value: new Color("#17607a") },
-      uFill: { value: new Color("#edeeea") },
-      uInk: { value: new Color("#17607a") },
+      // Neutral to start with. The real colours are the system's own and are
+      // lerped in per frame by Callouts — see LOOKS there.
+      uRing: { value: new Color("#5a6268") },
+      uFill: { value: new Color("#fcfcfb") },
+      uInk: { value: new Color("#14181c") },
       uOpacity: { value: 1 },
       uPixelSize: { value: 30 },
       uViewportHeight: { value: 800 },

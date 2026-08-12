@@ -19,7 +19,9 @@ export function SectionSlider() {
           onClick={atlas.toggleSection}
           aria-pressed={sectionOn}
           className={`flex items-center gap-1.5 px-1.5 py-1 transition-colors ${
-            sectionOn ? "text-cut" : "text-graphite hover:text-ink"
+            // The orange itself is a mark colour at 3.7:1 — the word next to it
+            // takes the darker cut ink so it clears 4.5:1.
+            sectionOn ? "text-cut-ink" : "text-graphite hover:text-ink"
           }`}
         >
           <Scissors size={13} strokeWidth={1.75} />

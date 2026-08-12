@@ -82,7 +82,7 @@ export function QuizPanel({ module }: { module: Module }) {
           side === "top" ? "top-14" : "bottom-0"
         }`}
       >
-        <div className="pointer-events-auto w-full max-w-md border border-hairline bg-paper/97 p-5 shadow-[0_1px_24px_rgba(23,26,23,0.12)] backdrop-blur-sm">
+        <div className="pointer-events-auto w-full max-w-md border border-hairline bg-paper/97 p-5 shadow-[0_1px_24px_rgba(20,24,28,0.12)] backdrop-blur-sm">
           {quiz.phase === "asking" && (
             <>
               <div className="plate-tag mb-2">Click it on the engine</div>
@@ -122,7 +122,7 @@ export function QuizPanel({ module }: { module: Module }) {
               type="button"
               onClick={atlas.nextQuestion}
               autoFocus
-              className="mt-4 flex w-full items-center justify-center gap-2 bg-ink px-4 py-2.5 text-paper transition-colors hover:bg-annotate"
+              className="mt-4 flex w-full items-center justify-center gap-2 bg-ink px-4 py-2.5 text-paper transition-colors hover:bg-graphite"
             >
               <span className="plate-tag text-paper">
                 {quiz.index + 1 >= total ? "See score" : "Next part"}
@@ -157,9 +157,9 @@ function Verdict({
           }`}
         >
           {correct ? (
-            <Check size={12} strokeWidth={3} color="#edeeea" />
+            <Check size={12} strokeWidth={3} color="#fcfcfb" />
           ) : (
-            <X size={12} strokeWidth={3} color="#edeeea" />
+            <X size={12} strokeWidth={3} color="#fcfcfb" />
           )}
         </span>
         <span
@@ -198,7 +198,7 @@ function Scorecard({
 
   return (
     <div className="absolute inset-0 z-30 grid place-items-center bg-paper/75 p-6 backdrop-blur-md">
-      <div className="plate-rise w-full max-w-sm border border-hairline bg-paper p-7 shadow-[0_2px_40px_rgba(23,26,23,0.14)]">
+      <div className="plate-rise w-full max-w-sm border border-hairline bg-paper p-7 shadow-[0_2px_40px_rgba(20,24,28,0.14)]">
         <div className="plate-tag">Result</div>
 
         <div className="mt-3 flex items-baseline gap-2">
@@ -214,7 +214,7 @@ function Scorecard({
           <button
             type="button"
             onClick={() => atlas.startQuiz(module.parts.map((p) => p.id))}
-            className="flex flex-1 items-center justify-center gap-2 bg-ink px-4 py-2.5 text-paper transition-colors hover:bg-annotate"
+            className="flex flex-1 items-center justify-center gap-2 bg-ink px-4 py-2.5 text-paper transition-colors hover:bg-graphite"
           >
             <RotateCcw size={13} strokeWidth={2} />
             <span className="plate-tag text-paper">Try again</span>
@@ -222,7 +222,7 @@ function Scorecard({
           <button
             type="button"
             onClick={atlas.exitQuiz}
-            className="flex-1 border border-hairline px-4 py-2.5 text-ink transition-colors hover:bg-annotate-soft"
+            className="flex-1 border border-hairline px-4 py-2.5 text-ink transition-colors hover:bg-wash"
           >
             <span className="plate-tag whitespace-nowrap text-ink">
               Back to the plate

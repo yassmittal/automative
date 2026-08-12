@@ -12,6 +12,7 @@ import { atlas } from "@/lib/store";
 import { Annotator, type AnnotationRefs } from "./Annotation";
 import { Callouts } from "./Callouts";
 import { CameraRig } from "./CameraRig";
+import { FocusWash } from "./FocusWash";
 import { Picker, type AuthoredPoint } from "./Picker";
 import { SectionCut } from "./SectionCut";
 import { Stage } from "./Stage";
@@ -106,6 +107,8 @@ export function Scene({
       />
 
       <Annotator anchors={anchors} refs={refs} />
+
+      <FocusWash anchors={anchors} focus={model.focus} />
 
       <Picker
         anchors={anchors}
