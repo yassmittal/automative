@@ -1,26 +1,140 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------------
+   Car Parts Atlas — "figure plate" design system
+
+   The whole screen is framed as a plate out of a factory service
+   manual: numbered callout balloons on the artwork, a legend keyed to
+   those numbers, hairline rules, mono for anything that is data.
+
+   Palette is a machinist's bench, not a 3D-demo void: pale surface
+   plate, graphite ink, process cyan for annotation. Safety orange is
+   spent in exactly one place — the section cut.
+   ------------------------------------------------------------------ */
+
+@theme {
+  --color-paper: #edeeea;
+  --color-plate: #dfe1db;
+  --color-plate-deep: #cfd2ca;
+  --color-ink: #171a17;
+  --color-graphite: #5c625c;
+  --color-hairline: #b9beb6;
+
+  --color-annotate: #17607a;
+  --color-annotate-soft: #d3e2e8;
+  --color-cut: #e4501e;
+  --color-correct: #2e7d32;
+  --color-wrong: #c62828;
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --ease-plate: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+/* Utility label — the small caps mono tag used on every panel header.
+   Named for what it is in the manual, not what it looks like. */
+.plate-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+}
+
+/* Display face is Archivo's expanded width — part names read like the
+   cover of a parts catalog. Used only on part names and the wordmark. */
+.plate-display {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 112;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.hairline {
+  border-color: var(--color-hairline);
+}
+
+/* Keyboard focus is visible everywhere, on a light ground. */
+:focus-visible {
+  outline: 2px solid var(--color-annotate);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+
+::selection {
+  background: var(--color-annotate);
+  color: var(--color-paper);
+}
+
+/* Thin scrollbars that match the plate rather than the OS. */
+.plate-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-hairline) transparent;
+}
+.plate-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.plate-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-hairline);
+  border-radius: 3px;
+}
+
+/* Section sweep control. The thumb is the cut line, so it is the one place
+   the orange shows up in the chrome. */
+.section-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 3px;
+  height: 18px;
+  background: var(--color-cut);
+  cursor: ew-resize;
+  border-radius: 0;
+}
+.section-range::-moz-range-thumb {
+  width: 3px;
+  height: 18px;
+  background: var(--color-cut);
+  border: 0;
+  cursor: ew-resize;
+  border-radius: 0;
+}
+
+@keyframes plate-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.plate-rise {
+  animation: plate-rise 0.5s var(--ease-plate) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

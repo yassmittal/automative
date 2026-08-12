@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Car Parts Atlas
 
-## Getting Started
+An interactive 3D atlas of a supercharged LS V8. Rotate the engine, click a
+numbered callout to read what the part does, then take a labelling quiz where
+the app names a part and you have to find it on the model.
 
-First, run the development server:
+The whole screen is framed as a plate out of a factory service manual: numbered
+callout balloons on the artwork, a legend keyed to those numbers, and a section
+line you can sweep through the block.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Next.js (App Router) · TypeScript · Tailwind v4 · react-three-fiber + drei ·
+GSAP · lucide-react. No database, no auth, no API routes — the content layer is
+plain typed TypeScript in `content/`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How the callouts work
 
-## Learn More
+This is the part worth reading before changing anything.
 
-To learn more about Next.js, take a look at the following resources:
+**Parts are data, not meshes.** The source model is one merged casting with no
+part names, so there is nothing to raycast against per-part. Each callout is an
+authored point in `content/ls-v8.ts`, rendered as a camera-facing disc.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Coordinates live in normalized space.** `useNormalizedModel` fits every model
+to the same size on its longest axis and bakes that transform onto the loaded
+object, so authored coordinates are readable numbers around −2..2 and stay
+comparable if a second module with a different native scale is added.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Snapping is local, not radial.** `snapToSurface` probes a short segment
+straight through each authored point. Casting in from outside along the radial
+line — the obvious approach — is wrong here: a callout on the front of the block
+would snap forward onto the radiator standing in front of it.
 
-## Deploy on Vercel
+**Picking is screen-space.** Clicks project every balloon to 2D and take the
+nearest within a pixel radius, rather than raycasting a 77k-triangle mesh. The
+renderer writes each balloon's current visibility into a shared array that the
+picker reads, so you can never click something you cannot see.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Visibility is facing + line-of-sight.** A per-frame dot product against the
+surface normal handles the far side of the engine. That alone cannot tell that
+the radiator is standing in front of the block, so one balloon per frame is also
+line-of-sight tested against the real geometry, round-robin.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Balloons hold constant pixel size in the vertex shader** rather than being
+rescaled on the CPU each frame, which is what keeps them steady during an orbit.
+
+The render loop is `frameloop="demand"`. Anything that animates must call
+`invalidate()`, or it will render one frame and stop.
+
+## Authoring callout positions
+
+Never type coordinates by hand. Open `/?authoring=1`, pick a part in the panel,
+and click it on the model — the position is read off a real raycast against the
+mesh. "Copy positions" emits a paste-ready block for `content/ls-v8.ts`.
+
+## Content honesty
+
+Part copy is a first draft. Anything making a quantitative or interval claim is
+flagged `needsVerify: true` and listed in [VERIFY.md](./VERIFY.md) — check those
+against a real service manual before treating them as fact.
+
+Components that could not be identified with confidence on this particular model
+were left off rather than pinned to a plausible-looking lump. See VERIFY.md.
+
+## Asset licensing
+
+The 3D model is licensed, not self-modelled. Full attribution, license terms and
+the exact optimisation pass are in [CREDITS.md](./CREDITS.md).
