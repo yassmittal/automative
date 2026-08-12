@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { SYSTEMS, type Module, type SystemId } from "@/content/types";
 import { atlas, useAtlas } from "@/lib/store";
 
@@ -41,9 +42,27 @@ export function Legend({ module }: { module: Module }) {
       </div>
 
       {[...grouped.entries()].map(([system, parts]) => (
-        <section key={system} className="mb-1">
-          <h3 className="sticky top-0 z-10 border-y border-hairline/60 bg-plate/80 px-5 py-1.5 backdrop-blur-sm">
-            <span className="plate-tag text-ink">{SYSTEMS[system].label}</span>
+        <section
+          key={system}
+          className="mb-1"
+          style={
+            {
+              "--system-color": SYSTEMS[system].color,
+              "--system-soft": SYSTEMS[system].soft,
+              "--system-ink": SYSTEMS[system].ink,
+            } as CSSProperties
+          }
+        >
+          <h3 className="sticky top-0 z-10 border-y border-hairline/70 bg-[var(--system-soft)]/90 px-5 py-2 backdrop-blur-sm">
+            <span className="flex items-center gap-2">
+              <span
+                aria-hidden
+                className="h-2.5 w-2.5 rounded-full bg-[var(--system-color)] shadow-[0_0_0_3px_rgba(255,255,255,0.72)]"
+              />
+              <span className="plate-tag text-[var(--system-ink)]">
+                {SYSTEMS[system].label}
+              </span>
+            </span>
           </h3>
 
           <ul>
@@ -59,17 +78,19 @@ export function Legend({ module }: { module: Module }) {
                     onPointerLeave={() => atlas.hover(null)}
                     onFocus={() => atlas.hover(part.id)}
                     onBlur={() => atlas.hover(null)}
-                    className={`flex w-full items-baseline gap-3 px-5 py-1.5 text-left transition-colors duration-150 ${
+                    className={`flex w-full items-baseline gap-3 border-l-4 px-5 py-1.5 text-left transition-colors duration-150 ${
                       active
-                        ? "bg-annotate text-paper"
+                        ? "border-[var(--system-color)] bg-[var(--system-color)] text-white"
                         : warm
-                          ? "bg-annotate-soft text-ink"
-                          : "text-ink hover:bg-annotate-soft/60"
+                          ? "border-[var(--system-color)] bg-[var(--system-soft)] text-ink"
+                          : "border-transparent text-ink hover:border-[var(--system-color)] hover:bg-[var(--system-soft)]"
                     }`}
                   >
                     <span
-                      className={`font-mono text-[11px] tabular-nums ${
-                        active ? "text-paper/70" : "text-graphite"
+                      className={`grid h-5 min-w-5 place-items-center rounded-full border font-mono text-[10px] tabular-nums ${
+                        active
+                          ? "border-white/40 bg-white/15 text-white"
+                          : "border-[var(--system-color)] bg-white text-[var(--system-ink)]"
                       }`}
                     >
                       {String(part.callout).padStart(2, "0")}

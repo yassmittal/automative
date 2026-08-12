@@ -60,10 +60,10 @@ export function useNormalizedModel(url: string): NormalizedModel {
     // Give it a proper machined-aluminium response so the studio environment
     // has something to reflect — without this it renders as flat grey putty.
     const material = new MeshStandardMaterial({
-      color: "#b6bab4",
-      metalness: 0.72,
-      roughness: 0.38,
-      envMapIntensity: 1.15,
+      color: "#c9d2dc",
+      metalness: 0.68,
+      roughness: 0.32,
+      envMapIntensity: 1.35,
     });
 
     const meshes: Mesh[] = [];

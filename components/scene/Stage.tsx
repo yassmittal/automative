@@ -32,7 +32,7 @@ export function Stage({ radius }: { radius: number }) {
       </directionalLight>
 
       {/* Fill from the opposite side so the shadowed flank keeps its form. */}
-      <directionalLight position={[-6, 2, -4]} intensity={0.65} color="#dce6ea" />
+      <directionalLight position={[-6, 2, -4]} intensity={0.75} color="#d8f3ff" />
 
       <Environment resolution={256} frames={1}>
         {/* Overhead softbox — the long highlight down the top of the blower. */}
@@ -51,7 +51,7 @@ export function Stage({ radius }: { radius: number }) {
           position={[7, 2, 3]}
           rotation={[0, -Math.PI / 2.4, 0]}
           scale={[7, 5, 1]}
-          color="#eef4f6"
+          color="#e0f7ff"
         />
         <Lightformer
           form="rect"
@@ -59,7 +59,7 @@ export function Stage({ radius }: { radius: number }) {
           position={[-7, 1, -2]}
           rotation={[0, Math.PI / 2.4, 0]}
           scale={[7, 5, 1]}
-          color="#dfe6e8"
+          color="#e7e2ff"
         />
         {/* Warm bounce off the bench, so the underside is not dead grey. */}
         <Lightformer
@@ -68,7 +68,7 @@ export function Stage({ radius }: { radius: number }) {
           position={[0, -4, 2]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={[9, 6, 1]}
-          color="#f6f1e8"
+          color="#fff0d8"
         />
       </Environment>
 
@@ -79,7 +79,7 @@ export function Stage({ radius }: { radius: number }) {
         blur={2.4}
         far={radius * 2}
         resolution={1024}
-        color="#2c332c"
+        color="#23304f"
         frames={1}
       />
     </>

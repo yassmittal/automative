@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { X } from "lucide-react";
 import { SYSTEMS, type Module } from "@/content/types";
 import { atlas, useAtlas } from "@/lib/store";
@@ -18,17 +19,32 @@ export function PartCard({ module }: { module: Module }) {
       }`}
     >
       {part && (
-        <div className="plate-scroll pointer-events-auto m-3 max-h-[calc(100%-1.5rem)] overflow-y-auto border border-hairline bg-paper/95 shadow-[0_1px_24px_rgba(23,26,23,0.10)] backdrop-blur-sm">
-          <header className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-hairline bg-paper/95 px-5 pt-4 pb-3 backdrop-blur-sm">
+        <div
+          className="plate-scroll pointer-events-auto m-3 max-h-[calc(100%-1.5rem)] overflow-y-auto border border-hairline bg-paper/95 shadow-[0_1px_24px_rgba(15,23,42,0.14)] backdrop-blur-sm"
+          style={
+            {
+              "--system-color": SYSTEMS[part.system].color,
+              "--system-soft": SYSTEMS[part.system].soft,
+              "--system-ink": SYSTEMS[part.system].ink,
+            } as CSSProperties
+          }
+        >
+          <header className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-hairline bg-[var(--system-soft)]/95 px-5 pt-4 pb-3 backdrop-blur-sm">
             <div>
-              <div className="plate-tag">
-                {module.figure} · Callout{" "}
-                {String(part.callout).padStart(2, "0")}
+              <div className="flex items-center gap-2">
+                <span
+                  aria-hidden
+                  className="h-2.5 w-2.5 rounded-full bg-[var(--system-color)]"
+                />
+                <div className="plate-tag text-[var(--system-ink)]">
+                  {module.figure} · Callout{" "}
+                  {String(part.callout).padStart(2, "0")}
+                </div>
               </div>
               <h2 className="plate-display mt-1.5 text-[26px] leading-[1.05] text-ink">
                 {part.name}
               </h2>
-              <div className="mt-1.5 text-[12px] text-graphite">
+              <div className="mt-1.5 text-[12px] text-[var(--system-ink)]">
                 {SYSTEMS[part.system].label} — {SYSTEMS[part.system].blurb}
               </div>
             </div>
@@ -37,7 +53,7 @@ export function PartCard({ module }: { module: Module }) {
               type="button"
               onClick={() => atlas.select(null)}
               aria-label="Close part details"
-              className="-mr-1 shrink-0 border border-hairline p-1.5 text-graphite transition-colors hover:bg-annotate-soft hover:text-ink"
+              className="-mr-1 shrink-0 border border-[var(--system-color)] bg-white/60 p-1.5 text-[var(--system-ink)] transition-colors hover:bg-white hover:text-ink"
             >
               <X size={13} strokeWidth={1.75} />
             </button>

@@ -91,7 +91,7 @@ function PlateHeader({ module }: { module: Module }) {
   const ready = useAtlas((s) => s.ready);
 
   return (
-    <header className="flex shrink-0 items-center justify-between gap-4 border-b border-hairline bg-plate px-4 py-2.5">
+    <header className="flex shrink-0 items-center justify-between gap-4 border-b border-hairline bg-paper px-4 py-2.5 shadow-[inset_0_-3px_0_var(--color-annotate)]">
       <div className="flex items-baseline gap-3">
         <span className="plate-display text-[13px] tracking-[0.02em] text-ink">
           Car Parts Atlas
@@ -108,16 +108,16 @@ function PlateHeader({ module }: { module: Module }) {
             type="button"
             disabled={!ready}
             onClick={() => atlas.startQuiz(module.parts.map((p) => p.id))}
-            className="flex items-center gap-1.5 bg-ink px-3 py-1.5 text-paper transition-colors hover:bg-annotate disabled:opacity-40"
+            className="flex items-center gap-1.5 bg-annotate px-3 py-1.5 text-white transition-colors hover:bg-cut disabled:opacity-40"
           >
             <GraduationCap size={13} strokeWidth={1.75} />
-            <span className="plate-tag text-paper">Take the quiz</span>
+            <span className="plate-tag text-white">Take the quiz</span>
           </button>
         ) : (
           <button
             type="button"
             onClick={atlas.exitQuiz}
-            className="flex items-center gap-1.5 border border-hairline px-3 py-1.5 transition-colors hover:bg-annotate-soft"
+            className="flex items-center gap-1.5 border border-annotate bg-annotate-soft px-3 py-1.5 text-annotate transition-colors hover:bg-plate-deep"
           >
             <RotateCcw size={13} strokeWidth={1.75} />
             <span className="plate-tag">Back to the plate</span>

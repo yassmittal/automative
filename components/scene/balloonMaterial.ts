@@ -100,9 +100,9 @@ export function createBalloonMaterial(glyph: Texture) {
     fragmentShader: fragment,
     uniforms: {
       uGlyph: { value: glyph },
-      uRing: { value: new Color("#17607a") },
-      uFill: { value: new Color("#edeeea") },
-      uInk: { value: new Color("#17607a") },
+      uRing: { value: new Color("#2563eb") },
+      uFill: { value: new Color("#f8fbff") },
+      uInk: { value: new Color("#1d4ed8") },
       uOpacity: { value: 1 },
       uPixelSize: { value: 30 },
       uViewportHeight: { value: 800 },

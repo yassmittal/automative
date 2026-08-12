@@ -7,24 +7,23 @@
    manual: numbered callout balloons on the artwork, a legend keyed to
    those numbers, hairline rules, mono for anything that is data.
 
-   Palette is a machinist's bench, not a 3D-demo void: pale surface
-   plate, graphite ink, process cyan for annotation. Safety orange is
-   spent in exactly one place — the section cut.
+   Palette is a bright diagnostic bench: crisp surface colors, saturated
+   system accents, and enough neutral structure to keep the model readable.
    ------------------------------------------------------------------ */
 
 @theme {
-  --color-paper: #edeeea;
-  --color-plate: #dfe1db;
-  --color-plate-deep: #cfd2ca;
-  --color-ink: #171a17;
-  --color-graphite: #5c625c;
-  --color-hairline: #b9beb6;
+  --color-paper: #f8fbff;
+  --color-plate: #edf4ff;
+  --color-plate-deep: #dbeafe;
+  --color-ink: #0f172a;
+  --color-graphite: #475569;
+  --color-hairline: #b7c8e8;
 
-  --color-annotate: #17607a;
-  --color-annotate-soft: #d3e2e8;
-  --color-cut: #e4501e;
-  --color-correct: #2e7d32;
-  --color-wrong: #c62828;
+  --color-annotate: #2563eb;
+  --color-annotate-soft: #dbeafe;
+  --color-cut: #ff5a1f;
+  --color-correct: #16a34a;
+  --color-wrong: #dc2626;
 
   --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;

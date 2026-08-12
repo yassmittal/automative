@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
 import type { Module } from "@/content/types";
 import { SYSTEMS } from "@/content/types";
@@ -47,7 +48,7 @@ export function AnnotationOverlay({
           ref={refs.line}
           points="0,0 0,0 0,0"
           fill="none"
-          stroke="var(--color-ink)"
+          stroke={part ? SYSTEMS[part.system].color : "var(--color-ink)"}
           strokeWidth="1"
           strokeDasharray="120"
           vectorEffect="non-scaling-stroke"
@@ -57,12 +58,19 @@ export function AnnotationOverlay({
       <div
         ref={refs.label}
         className="absolute top-0 left-0 whitespace-nowrap"
-        style={{ willChange: "transform" }}
+        style={
+          {
+            willChange: "transform",
+            "--system-color": part ? SYSTEMS[part.system].color : "var(--color-ink)",
+            "--system-soft": part ? SYSTEMS[part.system].soft : "var(--color-paper)",
+            "--system-ink": part ? SYSTEMS[part.system].ink : "var(--color-ink)",
+          } as CSSProperties
+        }
       >
         {/* The label sits over the casting, so it carries its own ground
             rather than relying on the plate showing through behind it. */}
-        <div className="bg-paper/85 px-1.5 py-1 backdrop-blur-[2px]">
-          <div className="plate-tag mb-0.5">
+        <div className="border-l-4 border-[var(--system-color)] bg-[var(--system-soft)]/90 px-2 py-1 backdrop-blur-[2px]">
+          <div className="plate-tag mb-0.5 text-[var(--system-ink)]">
             {part ? SYSTEMS[part.system].label : ""}
           </div>
           <div className="plate-display text-[15px] leading-none text-ink">

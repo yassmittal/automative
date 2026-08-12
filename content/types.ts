@@ -36,24 +36,66 @@ export type SystemId =
   | "exhaust"
   | "driveline";
 
-export const SYSTEMS: Record<SystemId, { label: string; blurb: string }> = {
-  air: { label: "Air path", blurb: "Getting air into the cylinders" },
+export const SYSTEMS: Record<
+  SystemId,
+  { label: string; blurb: string; color: string; soft: string; ink: string }
+> = {
+  air: {
+    label: "Air path",
+    blurb: "Getting air into the cylinders",
+    color: "#0ea5e9",
+    soft: "#dff5ff",
+    ink: "#075985",
+  },
   "fuel-ignition": {
     label: "Fuel & ignition",
     blurb: "Lighting the mixture at the right moment",
+    color: "#f59e0b",
+    soft: "#fff2cc",
+    ink: "#92400e",
   },
   rotating: {
     label: "Rotating assembly",
     blurb: "Turning combustion into torque",
+    color: "#8b5cf6",
+    soft: "#efe7ff",
+    ink: "#5b21b6",
   },
-  cooling: { label: "Cooling", blurb: "Carrying waste heat away" },
-  lubrication: { label: "Lubrication", blurb: "Keeping metal off metal" },
+  cooling: {
+    label: "Cooling",
+    blurb: "Carrying waste heat away",
+    color: "#06b6d4",
+    soft: "#d8fbff",
+    ink: "#0e7490",
+  },
+  lubrication: {
+    label: "Lubrication",
+    blurb: "Keeping metal off metal",
+    color: "#22c55e",
+    soft: "#dcfce7",
+    ink: "#166534",
+  },
   accessory: {
     label: "Accessory drive",
     blurb: "The bolt-on parts the crankshaft spins",
+    color: "#f97316",
+    soft: "#ffedd5",
+    ink: "#9a3412",
   },
-  exhaust: { label: "Exhaust", blurb: "Getting burnt gas out" },
-  driveline: { label: "Driveline", blurb: "Handing power to the transmission" },
+  exhaust: {
+    label: "Exhaust",
+    blurb: "Getting burnt gas out",
+    color: "#ef4444",
+    soft: "#fee2e2",
+    ink: "#991b1b",
+  },
+  driveline: {
+    label: "Driveline",
+    blurb: "Handing power to the transmission",
+    color: "#d946ef",
+    soft: "#fae8ff",
+    ink: "#86198f",
+  },
 };
 
 export type Module = {

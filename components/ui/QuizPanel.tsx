@@ -58,7 +58,7 @@ export function QuizPanel({ module }: { module: Module }) {
     <>
       {/* Progress rail, always at the top — it never moves. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-center p-3">
-        <div className="pointer-events-auto flex items-center gap-4 border border-hairline bg-paper/95 px-4 py-2 shadow-sm backdrop-blur-sm">
+        <div className="pointer-events-auto flex items-center gap-4 border border-annotate/40 bg-paper/95 px-4 py-2 shadow-sm backdrop-blur-sm">
           <span className="plate-tag">
             Question {quiz.index + 1} / {total}
           </span>
@@ -122,9 +122,9 @@ export function QuizPanel({ module }: { module: Module }) {
               type="button"
               onClick={atlas.nextQuestion}
               autoFocus
-              className="mt-4 flex w-full items-center justify-center gap-2 bg-ink px-4 py-2.5 text-paper transition-colors hover:bg-annotate"
+              className="mt-4 flex w-full items-center justify-center gap-2 bg-annotate px-4 py-2.5 text-white transition-colors hover:bg-cut"
             >
-              <span className="plate-tag text-paper">
+              <span className="plate-tag text-white">
                 {quiz.index + 1 >= total ? "See score" : "Next part"}
               </span>
               <ArrowRight size={13} strokeWidth={2} />
@@ -214,10 +214,10 @@ function Scorecard({
           <button
             type="button"
             onClick={() => atlas.startQuiz(module.parts.map((p) => p.id))}
-            className="flex flex-1 items-center justify-center gap-2 bg-ink px-4 py-2.5 text-paper transition-colors hover:bg-annotate"
+            className="flex flex-1 items-center justify-center gap-2 bg-annotate px-4 py-2.5 text-white transition-colors hover:bg-cut"
           >
             <RotateCcw size={13} strokeWidth={2} />
-            <span className="plate-tag text-paper">Try again</span>
+            <span className="plate-tag text-white">Try again</span>
           </button>
           <button
             type="button"

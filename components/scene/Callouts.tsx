@@ -15,16 +15,15 @@ import {
 import { glyphTexture, type Anchor } from "@/lib/callouts";
 import { createBalloonMaterial } from "./balloonMaterial";
 import { useAtlas } from "@/lib/store";
+import { SYSTEMS } from "@/content/types";
 
 type BalloonLook = { ring: string; fill: string; ink: string };
 
 const LOOKS = {
-  idle: { ring: "#17607a", fill: "#f4f5f2", ink: "#17607a" },
-  quiet: { ring: "#7d847c", fill: "#f4f5f2", ink: "#7d847c" },
-  hover: { ring: "#171a17", fill: "#ffffff", ink: "#171a17" },
-  active: { ring: "#17607a", fill: "#17607a", ink: "#f4f5f2" },
-  correct: { ring: "#2e7d32", fill: "#2e7d32", ink: "#f4f5f2" },
-  wrong: { ring: "#c62828", fill: "#c62828", ink: "#f4f5f2" },
+  quiet: { ring: "#64748b", fill: "#f8fbff", ink: "#64748b" },
+  hover: { ring: "#0f172a", fill: "#ffffff", ink: "#0f172a" },
+  correct: { ring: "#16a34a", fill: "#16a34a", ink: "#f8fbff" },
+  wrong: { ring: "#dc2626", fill: "#dc2626", ink: "#f8fbff" },
 } satisfies Record<string, BalloonLook>;
 
 const QUAD = new PlaneGeometry(1, 1);
@@ -139,7 +138,12 @@ export function Callouts({
       const isHovered = hoveredId === anchor.id;
       const isSelected = selectedId === anchor.id;
 
-      let look: BalloonLook = LOOKS.idle;
+      const systemLook = SYSTEMS[anchor.system];
+      let look: BalloonLook = {
+        ring: systemLook.color,
+        fill: "#ffffff",
+        ink: systemLook.ink,
+      };
       let emphasis = 0;
       let pulse = 0;
 
@@ -169,7 +173,11 @@ export function Callouts({
           emphasis = 1;
         }
       } else if (isSelected) {
-        look = LOOKS.active;
+        look = {
+          ring: systemLook.color,
+          fill: systemLook.color,
+          ink: "#ffffff",
+        };
         emphasis = 1;
       } else if (isHovered) {
         look = LOOKS.hover;
