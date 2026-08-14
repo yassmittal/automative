@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import { buildPaletteCss } from "@/lib/paletteCss";
+import { AUTHOR } from "@/content/author";
 import { PAPER } from "@/content/palette";
 import "./globals.css";
 
@@ -26,6 +27,8 @@ export const metadata: Metadata = {
   },
   description:
     "Rotate real 3D car parts, click any component to learn what it does, then test yourself with a labelling quiz.",
+  authors: [{ name: AUTHOR.name, url: AUTHOR.profileUrl }],
+  creator: AUTHOR.name,
 };
 
 export const viewport: Viewport = {

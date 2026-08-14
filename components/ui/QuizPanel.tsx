@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight, Check, RotateCcw, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, RotateCcw, X } from "lucide-react";
 import type { CatalogEntry } from "@/lib/catalog";
+import { AUTHOR } from "@/content/author";
 import { atlas, useAtlas } from "@/lib/store";
 import { annotationScreen } from "../scene/Annotation";
+import { GithubMark } from "./GithubMark";
 
 /**
  * The labelling quiz. It reuses the plate exactly as-is — the same balloons,
@@ -231,6 +233,25 @@ function Scorecard({
             </span>
           </button>
         </div>
+
+        {/* The one moment someone has finished the thing and is still looking
+            at it — the cheapest possible place to say who made it. */}
+        <a
+          href={AUTHOR.repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group mt-6 flex items-center gap-2 border-t border-hairline pt-4 text-graphite transition-colors hover:text-ink"
+        >
+          <GithubMark size={14} />
+          <span className="plate-tag transition-colors group-hover:text-ink">
+            Built by {AUTHOR.name} — read the source
+          </span>
+          <ArrowUpRight
+            size={13}
+            strokeWidth={1.75}
+            className="ml-auto shrink-0"
+          />
+        </a>
       </div>
     </div>
   );

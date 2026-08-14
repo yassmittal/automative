@@ -1,15 +1,15 @@
+import { Colophon } from "@/components/catalog/Colophon";
 import { ModuleCard } from "@/components/catalog/ModuleCard";
 import { PartSearch } from "@/components/catalog/PartSearch";
+import { SourceLink } from "@/components/ui/SourceLink";
 import { SystemSwatch } from "@/components/ui/SystemSwatch";
 import { SYSTEMS, SYSTEM_ORDER } from "@/content/systems";
 import { listCatalogEntries, listChaptersWithEntries } from "@/lib/catalog";
 
 export default function CatalogPage() {
   const chapters = listChaptersWithEntries();
-  const totalParts = listCatalogEntries().reduce(
-    (sum, entry) => sum + entry.partCount,
-    0,
-  );
+  const entries = listCatalogEntries();
+  const totalParts = entries.reduce((sum, entry) => sum + entry.partCount, 0);
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[68rem] flex-col px-5 py-8 sm:px-8">
@@ -26,9 +26,12 @@ export default function CatalogPage() {
             </p>
           </div>
 
-          <p className="plate-tag">
-            {listCatalogEntries().length} plates · {totalParts} parts
-          </p>
+          <div className="flex flex-col items-start gap-3 sm:items-end">
+            <SourceLink />
+            <p className="plate-tag">
+              {entries.length} plates · {totalParts} parts
+            </p>
+          </div>
         </div>
 
         <div className="max-w-[30rem]">
@@ -54,6 +57,8 @@ export default function CatalogPage() {
       ))}
 
       <SystemKey />
+
+      <Colophon plateCount={entries.length} partCount={totalParts} />
     </main>
   );
 }

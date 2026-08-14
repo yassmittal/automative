@@ -6,6 +6,7 @@ import { ArrowLeft, GraduationCap, RotateCcw } from "lucide-react";
 import type { CatalogEntry } from "@/lib/catalog";
 import { useIsAuthoring, useQueryFlag } from "@/lib/useQueryFlag";
 import { atlas, getState, useAtlas } from "@/lib/store";
+import { SourceLink } from "./ui/SourceLink";
 import { Viewport } from "./Viewport";
 import { AuthoringPanel, type AuthoredMap } from "./ui/AuthoringPanel";
 import { Legend } from "./ui/Legend";
@@ -131,6 +132,8 @@ function PlateHeader({ entry }: { entry: CatalogEntry }) {
       </div>
 
       <div className="flex shrink-0 items-center gap-2">
+        <SourceLink label="Source" compactLabel />
+
         {mode === "explore" ? (
           <button
             type="button"
