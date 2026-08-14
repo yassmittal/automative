@@ -2,6 +2,8 @@
 
 import { Color, DoubleSide, ShaderMaterial, type Texture } from "three";
 
+import { PAPER, PLATE_DEEP, PLATE_INK } from "@/content/palette";
+
 /**
  * The callout balloon: a camera-facing disc that holds a constant size in
  * pixels no matter how far the camera orbits out, with the callout number
@@ -50,10 +52,12 @@ const fragment = /* glsl */ `
   varying vec2 vUv;
 
   const float R  = 0.60;   // balloon radius inside the quad
-  // The ring is what carries the system colour, and at 0.085 of the quad it
-  // was a hairline that read as grey against a bright casting. Thick enough to
-  // hold its hue, thin enough to still look drawn rather than printed.
-  const float TH = 0.115;  // ring thickness
+  // The ring carries the system colour, and it has to hold that hue against
+  // two very different grounds: a near-black plate and a bright aluminium
+  // casting. At 0.085 of the quad it was a hairline that read as grey on the
+  // metal. Thick enough to stay a colour on both, thin enough to still look
+  // drawn rather than printed.
+  const float TH = 0.150;  // ring thickness
 
   void main() {
     vec2 p = (vUv - 0.5) * 2.0;
@@ -121,9 +125,9 @@ export function createBalloonMaterial(glyph: Texture) {
       uGlyph: { value: glyph },
       // Neutral to start with. The real colours are the system's own and are
       // lerped in per frame by Callouts — see LOOKS there.
-      uRing: { value: new Color("#5a6268") },
-      uFill: { value: new Color("#fcfcfb") },
-      uInk: { value: new Color("#14181c") },
+      uRing: { value: new Color(PLATE_INK) },
+      uFill: { value: new Color(PLATE_DEEP) },
+      uInk: { value: new Color(PAPER) },
       uOpacity: { value: 1 },
       uPixelSize: { value: 30 },
       uViewportHeight: { value: 800 },

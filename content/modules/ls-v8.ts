@@ -1,17 +1,18 @@
-import type { Module, Part } from "./types";
+import type { Module, Part } from "../types";
 
 /**
- * Callout positions are authored by clicking the model directly in the
- * browser with `?authoring=1`, not typed by hand. They live in normalized
- * model space (see lib/useNormalizedModel.ts), so they stay comparable if a
- * second module with a different native scale is added later.
+ * Callout positions are authored by clicking the model directly in the browser
+ * with `?authoring=1`, not typed by hand. They live in normalized model space
+ * (see lib/useNormalizedModel.ts), so they stay comparable across models of
+ * completely different native scale.
  *
  * The list only covers components that can actually be picked out on this
- * particular model. The source mesh arrives as one merged casting with no
- * part names, so anything that could not be identified with confidence — the
+ * particular model. The source mesh arrives as one merged casting with no part
+ * names, so anything that could not be identified with confidence — the
  * alternator, starter, oil filter and water pump among them — is left off
  * rather than pinned to a plausible-looking lump. See VERIFY.md.
  */
+
 const parts: Part[] = [
   {
     id: "supercharger",
@@ -98,6 +99,7 @@ const parts: Part[] = [
     ],
     service:
       "Lifetime part unless the engine is overheated badly enough to warp it or lift the head gasket.",
+    detailModuleId: "cylinder-head",
   },
   {
     id: "exhaust-header",
@@ -223,16 +225,11 @@ const parts: Part[] = [
 
 export const lsV8: Module = {
   id: "ls-v8",
-  figure: "FIG. 1",
+  chapter: "engine",
   name: "Supercharged LS V8",
   subtitle: "General Motors small-block, positive-displacement blower",
-  modelUrl: "/models/engine.glb",
+  blurb:
+    "The whole engine in one piece: air in at the blower, burnt gas out at the headers, and every system that keeps it alive in between.",
+  modelSlug: "ls-v8",
   parts,
-  credit: {
-    author: "UnforgettableName",
-    url: "https://sketchfab.com/3d-models/supercharged-ls-v8-engine-1-6e920e47959d4da797eff437beeaa3f3",
-    license: "Sketchfab Free Standard",
-  },
 };
-
-export const MODULES: Module[] = [lsV8];

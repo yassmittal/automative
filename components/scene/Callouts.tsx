@@ -12,41 +12,56 @@ import {
   type ShaderMaterial,
   Vector3,
 } from "three";
-import { SYSTEMS, type SystemId } from "@/content/types";
+import { SYSTEMS } from "@/content/systems";
+import {
+  CORRECT,
+  PAPER,
+  PLATE_DEEP,
+  PLATE_INK,
+  WRONG,
+} from "@/content/palette";
+import type { SystemId } from "@/content/types";
 import { glyphTexture, type Anchor } from "@/lib/callouts";
 import { createBalloonMaterial } from "./balloonMaterial";
 import { useAtlas } from "@/lib/store";
 
 type BalloonLook = { ring: string; fill: string; ink: string };
 
-const PAPER = "#fcfcfb";
-
 /**
  * The balloon palette.
  *
- * These are `Color` uniforms in a shader, not CSS — the Tailwind tokens in
- * globals.css cannot reach them, so the values are mirrored here by hand.
- * Change one side and you must change the other, or the DOM and the model
- * will disagree about what colour a system is.
+ * These are `Color` uniforms in a shader, which cannot read CSS — but they are
+ * read from the same typed constants that generate the CSS, so the legend and
+ * the model can no longer drift apart. That drift is why this file used to
+ * carry hand-mirrored hex values, and why a palette change made in one place
+ * left every balloon on the model wearing the previous colour.
  *
- * The system hues themselves come from SYSTEMS, which is the source of truth;
- * only the states that mean the same thing for every part are literals here.
+ * Balloons sit on the near-black plate, so a system appears here as its
+ * `beacon` — the bright variant — while the legend beside it uses the
+ * paper-tuned `color`. Same hue, two grounds.
  */
 const LOOKS = {
   /** Quiz mode: every balloon that is not part of the answer goes grey, so a
    *  system colour can never leak the answer. */
-  quiet: { ring: "#6e767c", fill: PAPER, ink: "#4a5157" },
-  correct: { ring: "#014b1a", fill: "#00752c", ink: PAPER },
-  wrong: { ring: "#940009", fill: "#cf2020", ink: PAPER },
+  quiet: { ring: PLATE_INK, fill: PLATE_DEEP, ink: PLATE_INK },
+  correct: { ring: PAPER, fill: CORRECT, ink: PAPER },
+  wrong: { ring: PAPER, fill: WRONG, ink: PAPER },
 } satisfies Record<string, BalloonLook>;
 
-/** Idle / hover / selected, in the colour of the system the part belongs to. */
+/**
+ * Idle / hover / selected, in the colour of the system the part belongs to.
+ *
+ * Idle is a dark disc with a lit ring and a lit number, so eleven of them read
+ * as a constellation over the casting rather than as eleven white stickers.
+ * Selecting one floods the disc with the system colour and knocks the number
+ * out dark — the strongest state change available without moving anything.
+ */
 function systemLooks(system: SystemId) {
-  const { color, ink } = SYSTEMS[system];
+  const { beacon } = SYSTEMS[system];
   return {
-    idle: { ring: color, fill: PAPER, ink },
-    hover: { ring: ink, fill: "#ffffff", ink },
-    active: { ring: ink, fill: color, ink: PAPER },
+    idle: { ring: beacon, fill: PLATE_DEEP, ink: beacon },
+    hover: { ring: PAPER, fill: PLATE_DEEP, ink: PAPER },
+    active: { ring: PAPER, fill: beacon, ink: PLATE_DEEP },
   };
 }
 
@@ -150,7 +165,13 @@ export function Callouts({
       toCamera.current.copy(camera.position).sub(anchor.position).normalize();
       const dot = toCamera.current.dot(anchor.normal);
 
-      let target = MathUtils.smoothstep(dot, 0.02, 0.4);
+      // Fully lit once the surface is within about 75° of facing the camera,
+      // rather than 65°. On a compact casting the tighter band was invisible;
+      // on a sparse structure like a chassis, where callouts land on tubes and
+      // arms whose normals point all over the place, it hid most of the plate
+      // at rest. Line-of-sight below is what actually stops a balloon showing
+      // through the model, so this only has to handle the far side.
+      let target = MathUtils.smoothstep(dot, -0.06, 0.26);
       if (occluded[i]) target = 0;
 
       // Anything the section plane has cut away goes with it. The plane keeps
@@ -210,7 +231,11 @@ export function Callouts({
       // --- write uniforms ----------------------------------------------
       u.uViewportHeight.value = size.height;
       u.uFovScale.value = fovScale;
-      u.uPixelSize.value = mode === "quiz" ? 34 : 30;
+      // Large enough that a two-digit callout is readable at a glance against
+      // a busy casting. The balloon holds this size in pixels no matter how far
+      // the camera orbits out, so this is a real, final size — not a size at
+      // some reference distance.
+      u.uPixelSize.value = mode === "quiz" ? 42 : 37;
 
       const prevOpacity = u.uOpacity.value as number;
       const nextOpacity = MathUtils.damp(prevOpacity, target, 9, 0.016);

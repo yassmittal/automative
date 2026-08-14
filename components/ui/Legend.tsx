@@ -1,7 +1,10 @@
 "use client";
 
-import { SYSTEMS, type Module, type SystemId } from "@/content/types";
+import { SYSTEMS } from "@/content/systems";
+import type { Part, SystemId } from "@/content/types";
+import type { CatalogEntry } from "@/lib/catalog";
 import { atlas, useAtlas } from "@/lib/store";
+import { SystemSwatch } from "./SystemSwatch";
 
 /**
  * The legend half of the figure plate: every callout number keyed to a part
@@ -10,17 +13,11 @@ import { atlas, useAtlas } from "@/lib/store";
  * The numbering here is the same numbering stamped on the balloons, which is
  * the whole reason it earns its place — it is a lookup table, not decoration.
  */
-export function Legend({ module }: { module: Module }) {
+export function Legend({ entry }: { entry: CatalogEntry }) {
+  const { module } = entry;
   const selectedId = useAtlas((s) => s.selectedId);
   const hoveredId = useAtlas((s) => s.hoveredId);
   const mode = useAtlas((s) => s.mode);
-
-  const grouped = new Map<SystemId, typeof module.parts>();
-  for (const part of module.parts) {
-    const list = grouped.get(part.system) ?? [];
-    list.push(part);
-    grouped.set(part.system, list);
-  }
 
   if (mode === "quiz") {
     return (
@@ -40,7 +37,7 @@ export function Legend({ module }: { module: Module }) {
         <div className="plate-tag">Legend</div>
       </div>
 
-      {[...grouped.entries()].map(([system, parts]) => {
+      {groupBySystem(module.parts).map(([system, parts]) => {
         const look = SYSTEMS[system];
         // A spine down the left of the group in the system's colour, so a
         // row's membership is legible without reading the heading. The heading
@@ -53,11 +50,12 @@ export function Legend({ module }: { module: Module }) {
             style={{ borderLeftColor: look.color }}
           >
             <h3
-              className="sticky top-0 z-10 border-y border-hairline/60 px-4 py-1.5 backdrop-blur-sm"
+              className="sticky top-0 z-10 flex items-center gap-2 border-y border-hairline/60 px-4 py-1.5 backdrop-blur-sm"
               style={{
                 background: `color-mix(in srgb, ${look.soft} 82%, transparent)`,
               }}
             >
+              <SystemSwatch system={system} size={14} />
               <span className="plate-tag" style={{ color: look.ink }}>
                 {look.label}
               </span>
@@ -83,15 +81,15 @@ export function Legend({ module }: { module: Module }) {
                           : warm
                             ? look.soft
                             : "transparent",
-                        color: active ? "var(--color-paper)" : "var(--color-ink)",
+                        color: active ? "var(--paper)" : "var(--ink)",
                       }}
                     >
                       <span
                         className="font-mono text-[11px] tabular-nums"
                         style={{
                           color: active
-                            ? "color-mix(in srgb, var(--color-paper) 72%, transparent)"
-                            : "var(--color-graphite)",
+                            ? "color-mix(in srgb, var(--paper) 72%, transparent)"
+                            : "var(--graphite)",
                         }}
                       >
                         {String(part.callout).padStart(2, "0")}
@@ -109,4 +107,15 @@ export function Legend({ module }: { module: Module }) {
       })}
     </div>
   );
+}
+
+/** Groups parts under their system, in the order the parts are authored in. */
+function groupBySystem(parts: Part[]): [SystemId, Part[]][] {
+  const grouped = new Map<SystemId, Part[]>();
+  for (const part of parts) {
+    const list = grouped.get(part.system) ?? [];
+    list.push(part);
+    grouped.set(part.system, list);
+  }
+  return [...grouped.entries()];
 }

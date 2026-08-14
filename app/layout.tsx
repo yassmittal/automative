@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import { buildPaletteCss } from "@/lib/paletteCss";
+import { PAPER } from "@/content/palette";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -18,13 +20,16 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Car Parts Atlas — Supercharged LS V8",
+  title: {
+    default: "Car Parts Atlas",
+    template: "%s — Car Parts Atlas",
+  },
   description:
-    "Rotate a real 3D V8 engine, click any part to learn what it does, then test yourself with a labelling quiz.",
+    "Rotate real 3D car parts, click any component to learn what it does, then test yourself with a labelling quiz.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#edf0f1",
+  themeColor: PAPER,
   colorScheme: "light",
 };
 
@@ -34,15 +39,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${archivo.variable} ${plexMono.variable}`}>
       <head>
-        {/* Start the 810 KB engine downloading alongside the JS bundle rather
-            than waiting for React to hydrate and ask for it. */}
-        <link
-          rel="preload"
-          href="/models/engine.glb"
-          as="fetch"
-          type="model/gltf-binary"
-          crossOrigin="anonymous"
-        />
+        {/* The palette is computed in TypeScript so that one set of values can
+            reach both the DOM and the balloon shader. This is where the DOM
+            half arrives. It is inlined rather than linked because every first
+            paint depends on it — a stylesheet request here would flash an
+            unstyled plate. */}
+        {/* Safe to inject: generated from typed constants in
+            content/palette.ts, never from user input. */}
+        <style dangerouslySetInnerHTML={{ __html: buildPaletteCss() }} />
       </head>
       <body className="antialiased">
         {children}

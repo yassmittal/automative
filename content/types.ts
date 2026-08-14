@@ -1,17 +1,100 @@
+/**
+ * The shape of everything the atlas teaches.
+ *
+ * Content lives as typed TypeScript rather than in a database: it is authored,
+ * not user-generated, it changes when someone writes prose, and it benefits far
+ * more from type checking and code review than from an admin panel. Everything
+ * the UI reads goes through `lib/catalog.ts`, so if that ever stops being true
+ * the source can move behind an API without a component noticing.
+ */
+
+/**
+ * A functional system a part belongs to. This is the atlas's main idea: a part
+ * is easier to remember as a member of a system that does one job than as a
+ * lump of metal in a particular place.
+ *
+ * Colour follows this, not the module — a coolant hose is the cooling colour
+ * whether you meet it on the V8 or on the cylinder head, so "all the blue ones
+ * carry heat away" survives moving between plates.
+ */
+export type SystemId =
+  // Engine systems
+  | "air"
+  | "fuel-ignition"
+  | "rotating"
+  | "cooling"
+  | "lubrication"
+  | "accessory"
+  | "exhaust"
+  | "driveline"
+  // Running-gear systems
+  | "braking"
+  | "suspension"
+  | "structure";
+
+/** How one system is drawn, everywhere it appears. */
+export type SystemLook = {
+  label: string;
+  /** One line on what the system is for, shown under the legend heading. */
+  blurb: string;
+  /** The mark: legend rule, balloon ring, leader line. */
+  color: string;
+  /** Tint behind a row or a card header. `ink` reads against it. */
+  soft: string;
+  /** Text, and the ring of an emphasised balloon. */
+  ink: string;
+  /**
+   * The same hue lifted bright enough to read on the dark viewport. This is
+   * what the balloon on the model wears; `color` is what the legend beside it
+   * wears on paper. Two values because they sit on grounds 30 lightness points
+   * apart, not because they are two different colours.
+   */
+  beacon: string;
+};
+
+/**
+ * A chapter of the atlas — how modules are grouped for browsing, the way a
+ * service manual is split into sections before it is split into figures.
+ */
+export type ChapterId = "engine" | "forced-induction" | "running-gear";
+
+export type Chapter = {
+  id: ChapterId;
+  label: string;
+  /** A sentence on what this chapter covers, shown on the catalog page. */
+  blurb: string;
+};
+
 /** A single labelled component on a module's artwork. */
 export type Part = {
-  /** Stable slug. Used for quiz answers and deep links. */
+  /** Stable slug. Used for quiz answers and deep links. Unique within a module. */
   id: string;
-  /** Callout number on the plate. Keys the legend to the balloon, exactly
-   *  like a figure in a factory service manual. Assigned by reading order
-   *  in the legend, so it stays meaningful rather than decorative. */
+  /**
+   * Callout number on the plate. Keys the legend to the balloon, exactly like
+   * a figure in a factory service manual. Assigned by reading order in the
+   * legend, so it stays meaningful rather than decorative.
+   */
   callout: number;
   name: string;
-  /** Which system the part belongs to. Groups the legend. */
   system: SystemId;
-  /** Hand-authored point in normalized model space (see useNormalizedModel).
-   *  Snapped onto the mesh surface once on load, so a near-miss still lands. */
+  /**
+   * Hand-authored point in normalized model space (see useNormalizedModel).
+   * Snapped onto the mesh surface once on load, so a near-miss still lands.
+   *
+   * Authored by clicking the model at `?authoring=1` — never typed by hand.
+   */
   position: [number, number, number];
+  /**
+   * Mesh nodes in the GLB that *are* this part, when the model happens to name
+   * them. Present on only a few models: most of the source library is scans
+   * and game exports whose meshes are called things like `Object_2`.
+   *
+   * When present, the part can be highlighted over its real geometry instead of
+   * only carrying a balloon. When absent, the balloon is the whole story — and
+   * that is the honest answer, not a degraded one, because the model genuinely
+   * does not know where the part ends.
+   */
+  meshNodeNames?: string[];
   /** One line, plain language: what this part does. */
   summary: string;
   /** One thing worth knowing that isn't obvious from the name. */
@@ -20,117 +103,70 @@ export type Part = {
   symptoms: string[];
   /** Rough service expectation. */
   service: string;
-  /** True when `service` or `fact` contains a figure that should be checked
-   *  against a real service manual before this ships as fact. Surfaced in
-   *  VERIFY.md — never silently published as gospel. */
+  /**
+   * Another module that shows this same part in detail on its own. Turns the
+   * atlas from a set of separate plates into something you can follow: the
+   * cylinder head on the V8 leads to the plate that is nothing but the head.
+   */
+  detailModuleId?: string;
+  /**
+   * True when `service` or `fact` contains a figure that should be checked
+   * against a real service manual before this ships as fact. Surfaced in
+   * VERIFY.md — never silently published as gospel.
+   */
   needsVerify?: boolean;
 };
 
-export type SystemId =
-  | "air"
-  | "fuel-ignition"
-  | "rotating"
-  | "cooling"
-  | "lubrication"
-  | "accessory"
-  | "exhaust"
-  | "driveline";
-
-/** How one system is drawn, everywhere it appears. */
-export type SystemLook = {
-  label: string;
+/**
+ * One plate of the atlas: a model, and every part called out on it.
+ *
+ * `figure` is deliberately absent — it is the module's position in the
+ * catalog, derived in lib/catalog.ts, so inserting a module does not mean
+ * renumbering the ones after it by hand.
+ */
+export type Module = {
+  id: string;
+  chapter: ChapterId;
+  name: string;
+  /** The specific thing this is, under the name. */
+  subtitle: string;
+  /** A sentence for the catalog card: why this plate is worth opening. */
   blurb: string;
-  /** The mark: legend rule, balloon ring, leader line. ≥ 4.5:1 on paper, so
-   *  paper-white text also sits on it. */
-  color: string;
-  /** Tint behind a row or a card header. `ink` reads ≥ 6:1 on it. */
-  soft: string;
-  /** Text and the ring of an emphasised balloon. ≥ 7.9:1 on paper. */
-  ink: string;
+  /**
+   * Which GLB to load, by manifest slug. The file path and the attribution are
+   * both derived from this, so neither can drift from what was actually built
+   * by `npm run models:sync`.
+   */
+  modelSlug: string;
+  /**
+   * Which direction the plate opens from, as a camera direction in normalized
+   * model space. The distance is always computed from the viewport, so only
+   * the direction matters here.
+   *
+   * Defaults to a three-quarter view from above, which suits anything shaped
+   * roughly like an engine. It is wrong often enough to be worth overriding:
+   * a cylinder head keeps everything interesting on its underside, and opening
+   * above it shows a plate with one visible callout out of seven.
+   */
+  openingView?: [number, number, number];
+  parts: Part[];
 };
 
 /**
- * One source of truth for the system colours.
- *
- * These are *not* free choices. Green and red are reserved for quiz verdicts
- * and orange for the section cut, which leaves the wheel from 207° round to
- * 356° plus a brass island at 83° — seven cool slots at roughly 24° spacing,
- * and the brass. Lightness carries what the cramped hue spacing cannot: the
- * set holds a worst-pair CVD ΔE of 8.1 across all 28 pairs (OKLab ×100,
- * Machado 2009 protan/deutan at severity 1.0), against a target of 8.
- *
- * Colour is never the only channel — the callout number and the legend group
- * heading say the same thing without it. See README.
- *
- * Mirrored by hand into the balloon shader, which is GLSL and cannot read
- * these: `LOOKS` in components/scene/Callouts.tsx.
+ * Where a model came from and what it cost, written by `npm run models:sync`
+ * from the Sketchfab API. Never hand-edited — see scripts/modelManifest.ts.
  */
-export const SYSTEMS: Record<SystemId, SystemLook> = {
-  air: {
-    label: "Air path",
-    blurb: "Getting air into the cylinders",
-    color: "#017f97",
-    soft: "#c2e7f2",
-    ink: "#005768",
-  },
-  "fuel-ignition": {
-    label: "Fuel & ignition",
-    blurb: "Lighting the mixture at the right moment",
-    color: "#7030c1",
-    soft: "#e3d9ff",
-    ink: "#5e1da8",
-  },
-  rotating: {
-    label: "Rotating assembly",
-    blurb: "Turning combustion into torque",
-    color: "#5a105d",
-    soft: "#f5d3f5",
-    ink: "#5a105d",
-  },
-  cooling: {
-    label: "Cooling",
-    blurb: "Carrying waste heat away",
-    color: "#0a4f86",
-    soft: "#c9e3fe",
-    ink: "#0a4f86",
-  },
-  lubrication: {
-    label: "Lubrication",
-    blurb: "Keeping metal off metal",
-    color: "#916f02",
-    soft: "#eddebc",
-    ink: "#614900",
-  },
-  accessory: {
-    label: "Accessory drive",
-    blurb: "The bolt-on parts the crankshaft spins",
-    color: "#3302a2",
-    soft: "#d9ddff",
-    ink: "#3302a2",
-  },
-  exhaust: {
-    label: "Exhaust",
-    blurb: "Getting burnt gas out",
-    color: "#9d0f5b",
-    soft: "#ffd1e1",
-    ink: "#8d0050",
-  },
-  driveline: {
-    label: "Driveline",
-    blurb: "Handing power to the transmission",
-    color: "#3167ed",
-    soft: "#d1e0fe",
-    ink: "#0f3bb7",
-  },
-};
-
-export type Module = {
-  id: string;
-  /** Figure number on the plate header. */
-  figure: string;
-  name: string;
-  subtitle: string;
-  modelUrl: string;
-  parts: Part[];
-  credit: { author: string; url: string; license: string };
+export type ModelCredit = {
+  /** Matches the GLB filename stem under public/models. */
+  slug: string;
+  sourceName: string;
+  authorName: string;
+  authorProfileUrl: string;
+  modelPageUrl: string;
+  licenseLabel: string;
+  /** Triangles as published, before our optimisation pass. */
+  sourceTriangleCount: number;
+  /** Triangles in the file the browser actually downloads. */
+  shippedTriangleCount: number;
+  shippedByteSize: number;
 };

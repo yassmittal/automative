@@ -12,6 +12,36 @@ const DRAG_SLOP_PX = 6;
 export type AuthoredPoint = { position: [number, number, number] };
 
 /**
+ * Where authoring mode publishes its raycast, so a coordinate can be read for
+ * a point on screen without clicking it.
+ *
+ * Placing a callout means finding the point on the mesh under a pixel, and
+ * clicking is the natural way to ask for one — but it is one question per
+ * round trip, and a plate is a dozen parts across five plates. Exposing the
+ * same raycast lets a whole plate be probed in a single pass, which is the
+ * difference between authoring a module in minutes and in an afternoon.
+ *
+ * Only ever attached under `?authoring=1`, and removed when that unmounts.
+ */
+declare global {
+  interface Window {
+    atlasAuthoring?: {
+      /**
+       * Canvas-relative CSS pixels in; the point on the mesh under them, plus
+       * the name of the mesh that was hit. On a model whose meshes are named
+       * for real parts, that name turns authoring from "does this look like
+       * the caliper" into a fact.
+       */
+      probeScreenPoint: (
+        x: number,
+        y: number,
+      ) => { position: [number, number, number]; meshName: string } | null;
+      canvasSize: () => { width: number; height: number };
+    };
+  }
+}
+
+/**
  * Turns pointer input on the canvas into hover, selection and quiz answers.
  *
  * Regular picking never touches the mesh: every balloon is projected to 2D
@@ -38,6 +68,39 @@ export function Picker({
 
   const anchorsRef = useRef(anchors);
   anchorsRef.current = anchors;
+
+  // The raycast behind authoring, made callable without a click. See the
+  // declaration of `window.atlasAuthoring` above for why this exists.
+  useEffect(() => {
+    if (!authoring) return;
+    const canvas = gl.domElement;
+
+    window.atlasAuthoring = {
+      probeScreenPoint(x, y) {
+        const rect = canvas.getBoundingClientRect();
+        const raycaster = new Raycaster();
+        raycaster.setFromCamera(
+          new Vector2((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1),
+          camera,
+        );
+        const hit = raycaster.intersectObjects(meshes, false)[0];
+        if (!hit) return null;
+        const point = hit.point as Vector3;
+        return {
+          position: [round(point.x), round(point.y), round(point.z)],
+          meshName: hit.object.name,
+        };
+      },
+      canvasSize() {
+        const rect = canvas.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+      },
+    };
+
+    return () => {
+      delete window.atlasAuthoring;
+    };
+  }, [authoring, camera, gl, meshes]);
 
   useEffect(() => {
     const el = gl.domElement;

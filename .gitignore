@@ -39,4 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Raw Sketchfab downloads, kept only while `npm run models:sync` is running.
+# The optimised results in public/models are what the repo ships.
+/.model-downloads
 private.md

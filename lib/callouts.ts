@@ -69,7 +69,17 @@ export function snapToSurface(
 
     raycaster.far = LOCAL_REACH * 2;
     raycaster.set(authored.clone().addScaledVector(outward, LOCAL_REACH), inward);
-    let hit = raycaster.intersectObjects(meshes, false)[0];
+
+    // Take the surface *nearest the authored point*, not the first one the ray
+    // meets. Those are the same thing on a plain outer surface and very
+    // different inside a recess: a point authored on the roof of a combustion
+    // chamber has the chamber's rim in front of it, and taking the first hit
+    // moves the callout onto that rim — which then faces the wrong way, so the
+    // camera flies to the far side of it and ends up inside the casting.
+    let hit = nearestHitTo(
+      authored,
+      raycaster.intersectObjects(meshes, false),
+    );
 
     if (!hit) {
       raycaster.far = Infinity;
@@ -108,6 +118,23 @@ export function snapToSurface(
       normal,
     };
   });
+}
+
+function nearestHitTo<T extends { point: Vector3 }>(
+  target: Vector3,
+  hits: T[],
+): T | undefined {
+  let nearest: T | undefined;
+  let nearestDistance = Infinity;
+
+  for (const hit of hits) {
+    const distance = hit.point.distanceToSquared(target);
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearest = hit;
+    }
+  }
+  return nearest;
 }
 
 const projected = new Vector3();

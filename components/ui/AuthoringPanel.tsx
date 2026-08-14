@@ -52,12 +52,12 @@ export function AuthoringPanel({
       <header className="border-b border-hairline px-4 py-3">
         <div className="flex items-center gap-1.5">
           <Crosshair size={12} strokeWidth={2} className="text-cut" />
-          <span className="plate-tag" style={{ color: "var(--color-cut)" }}>
+          <span className="plate-tag" style={{ color: "var(--cut)" }}>
             Authoring
           </span>
         </div>
         <p className="mt-1.5 text-[12px] leading-snug text-graphite">
-          Pick a part, then click it on the engine. {done} of{" "}
+          Pick a part, then click it on the model. {done} of{" "}
           {module.parts.length} placed.
         </p>
       </header>
@@ -72,7 +72,7 @@ export function AuthoringPanel({
                 type="button"
                 onClick={() => onArm(armed ? null : part.id)}
                 className={`flex w-full flex-col gap-0.5 px-4 py-1.5 text-left transition-colors ${
-                  armed ? "bg-cut text-paper" : "hover:bg-wash"
+                  armed ? "bg-cut text-paper" : "hover:bg-paper-sunk"
                 }`}
               >
                 <span className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export function AuthoringPanel({
         <button
           type="button"
           onClick={onReset}
-          className="border border-hairline px-3 py-2 transition-colors hover:bg-wash"
+          className="border border-hairline px-3 py-2 transition-colors hover:bg-paper-sunk"
         >
           <span className="plate-tag">Reset</span>
         </button>

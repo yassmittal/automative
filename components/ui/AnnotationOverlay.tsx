@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Module } from "@/content/types";
-import { SYSTEMS } from "@/content/types";
+import { SYSTEMS } from "@/content/systems";
+import type { CatalogEntry } from "@/lib/catalog";
 import { useAnnotatedId, type AnnotationRefs } from "../scene/Annotation";
 
 /**
@@ -13,14 +13,14 @@ import { useAnnotatedId, type AnnotationRefs } from "../scene/Annotation";
  * This half only owns what the label says and how it fades in.
  */
 export function AnnotationOverlay({
-  module,
+  entry,
   refs,
 }: {
-  module: Module;
+  entry: CatalogEntry;
   refs: AnnotationRefs;
 }) {
   const annotatedId = useAnnotatedId();
-  const part = module.parts.find((p) => p.id === annotatedId);
+  const part = entry.module.parts.find((candidate) => candidate.id === annotatedId);
   const look = part ? SYSTEMS[part.system] : null;
   const wrapper = useRef<HTMLDivElement>(null);
 
@@ -48,7 +48,7 @@ export function AnnotationOverlay({
           ref={refs.line}
           points="0,0 0,0 0,0"
           fill="none"
-          stroke={look?.color ?? "var(--color-ink)"}
+          stroke={look?.beacon ?? "var(--plate-ink)"}
           strokeWidth="1.25"
           strokeDasharray="120"
           vectorEffect="non-scaling-stroke"
@@ -61,12 +61,14 @@ export function AnnotationOverlay({
         style={{ willChange: "transform" }}
       >
         {/* The label sits over the casting, so it carries its own ground
-            rather than relying on the plate showing through behind it. */}
-        <div className="bg-paper/90 px-1.5 py-1 backdrop-blur-[2px]">
-          <div className="plate-tag mb-0.5" style={{ color: look?.ink }}>
+            rather than relying on the plate showing through behind it. That
+            ground is dark, like the plate it lies on — a paper chip here would
+            punch a bright hole in the middle of the artwork. */}
+        <div className="border border-plate-hairline bg-plate-deep/85 px-2 py-1.5 backdrop-blur-[3px]">
+          <div className="plate-tag mb-0.5" style={{ color: look?.beacon }}>
             {look?.label ?? ""}
           </div>
-          <div className="plate-display text-[15px] leading-none text-ink">
+          <div className="plate-display text-[15px] leading-none text-paper">
             {part?.name ?? ""}
           </div>
         </div>

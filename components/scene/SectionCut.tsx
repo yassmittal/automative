@@ -4,12 +4,12 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { BufferGeometry, Float32BufferAttribute, Mesh, Plane, Vector3 } from "three";
+import { CUT } from "@/content/palette";
 import { applyClipping } from "@/lib/useNormalizedModel";
 import { useAtlas } from "@/lib/store";
 
 /**
- * Sweeps a single clipping plane through the engine so you can see inside the
- * block.
+ * Sweeps a single clipping plane through the model so you can see inside it.
  *
  * One plane assigned to the one shared material is all it takes — the model
  * is already double-sided, so the interior walls render properly instead of
@@ -101,7 +101,7 @@ export function SectionCut({
 
   return (
     <lineSegments ref={frame} geometry={geometry} visible={false} renderOrder={5}>
-      <lineBasicMaterial color="#e4501e" transparent opacity={0.85} depthTest={false} />
+      <lineBasicMaterial color={CUT} transparent opacity={0.85} depthTest={false} />
     </lineSegments>
   );
 }

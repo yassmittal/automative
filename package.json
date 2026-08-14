@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "models:sync": "tsx scripts/syncModels.ts",
+    "palette:check": "tsx scripts/checkPalette.ts",
+    "palette:tune": "tsx scripts/tunePalette.ts",
+    "model:inspect": "tsx scripts/inspectModel.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
@@ -20,6 +24,10 @@
     "three": "^0.185.1"
   },
   "devDependencies": {
+    "@gltf-transform/cli": "^4.4.2",
+    "@gltf-transform/core": "^4.4.2",
+    "@gltf-transform/extensions": "^4.4.2",
+    "@gltf-transform/functions": "^4.4.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -27,7 +35,10 @@
     "@types/three": "^0.185.4",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "meshoptimizer": "^1.2.0",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }

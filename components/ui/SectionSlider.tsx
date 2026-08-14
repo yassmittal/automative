@@ -19,9 +19,7 @@ export function SectionSlider() {
           onClick={atlas.toggleSection}
           aria-pressed={sectionOn}
           className={`flex items-center gap-1.5 px-1.5 py-1 transition-colors ${
-            // The orange itself is a mark colour at 3.7:1 — the word next to it
-            // takes the darker cut ink so it clears 4.5:1.
-            sectionOn ? "text-cut-ink" : "text-graphite hover:text-ink"
+            sectionOn ? "text-cut" : "text-graphite hover:text-ink"
           }`}
         >
           <Scissors size={13} strokeWidth={1.75} />
@@ -37,7 +35,7 @@ export function SectionSlider() {
           step={0.005}
           value={section}
           onChange={(e) => atlas.setSection(Number(e.target.value))}
-          aria-label="Sweep the section cut through the engine"
+          aria-label="Sweep the section cut through the model"
           className="section-range h-1 w-32 cursor-ew-resize appearance-none bg-hairline outline-none sm:w-52"
         />
 

@@ -21,13 +21,13 @@ import { useAtlas } from "@/lib/store";
 export function CameraRig({
   anchors,
   controls,
-  focusDistance,
+  focusDistanceFor,
   home,
 }: {
   anchors: Anchor[];
   controls: React.RefObject<OrbitControlsImpl | null>;
-  /** How far back a focused part is viewed from. */
-  focusDistance: number;
+  /** How far back to view a given part from. See useFraming in Scene. */
+  focusDistanceFor: (partId: string) => number;
   /** Opening camera position, already sized to the viewport. */
   home: Vector3;
 }) {
@@ -83,7 +83,9 @@ export function CameraRig({
     // it for context — pulled right onto the surface it reads as an abstract
     // lump of aluminium.
     const destination = anchor
-      ? anchor.position.clone().add(approach.multiplyScalar(focusDistance))
+      ? anchor.position
+          .clone()
+          .add(approach.multiplyScalar(focusDistanceFor(anchor.id)))
       : home.clone();
     const lookAt = anchor ? anchor.position.clone() : new Vector3(0, 0, 0);
 
@@ -134,7 +136,7 @@ export function CameraRig({
     return () => {
       for (const t of tweens.current) t.kill();
     };
-  }, [focusId, mode, anchors, camera, controls, focusDistance, home, invalidate]);
+  }, [focusId, mode, anchors, camera, controls, focusDistanceFor, home, invalidate]);
 
   return null;
 }

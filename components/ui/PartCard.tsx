@@ -1,13 +1,15 @@
 "use client";
 
-import { X } from "lucide-react";
-import { SYSTEMS, type Module } from "@/content/types";
+import Link from "next/link";
+import { ArrowUpRight, X } from "lucide-react";
+import { SYSTEMS } from "@/content/systems";
+import { findCatalogEntry, type CatalogEntry } from "@/lib/catalog";
 import { atlas, useAtlas } from "@/lib/store";
 
 /** The read-out for one part. Slides in over the plate, never reflows it. */
-export function PartCard({ module }: { module: Module }) {
+export function PartCard({ entry }: { entry: CatalogEntry }) {
   const selectedId = useAtlas((s) => s.selectedId);
-  const part = module.parts.find((p) => p.id === selectedId);
+  const part = entry.module.parts.find((candidate) => candidate.id === selectedId);
   const open = Boolean(part);
   const look = part ? SYSTEMS[part.system] : null;
 
@@ -19,7 +21,7 @@ export function PartCard({ module }: { module: Module }) {
       }`}
     >
       {part && look && (
-        <div className="plate-scroll pointer-events-auto m-3 max-h-[calc(100%-1.5rem)] overflow-y-auto border border-hairline bg-paper/95 shadow-[0_1px_24px_rgba(20,24,28,0.10)] backdrop-blur-sm">
+        <div className="plate-scroll pointer-events-auto m-3 max-h-[calc(100%-1.5rem)] overflow-y-auto border border-hairline bg-paper shadow-[0_2px_28px_rgba(0,0,0,0.45)]">
           {/* The header wears the system's colour, so the card, the legend row
               and the balloon on the model all agree at a glance. */}
           <header
@@ -31,8 +33,7 @@ export function PartCard({ module }: { module: Module }) {
           >
             <div>
               <div className="plate-tag" style={{ color: look.ink }}>
-                {module.figure} · Callout{" "}
-                {String(part.callout).padStart(2, "0")}
+                {entry.figure} · Callout {String(part.callout).padStart(2, "0")}
               </div>
               <h2 className="plate-display mt-1.5 text-[26px] leading-[1.05] text-ink">
                 {part.name}
@@ -75,10 +76,45 @@ export function PartCard({ module }: { module: Module }) {
             </div>
 
             <Field label="Service">{part.service}</Field>
+
+            {part.detailModuleId && <DetailModuleLink moduleId={part.detailModuleId} />}
           </div>
         </div>
       )}
     </aside>
+  );
+}
+
+/**
+ * The link out to a plate that shows this part on its own.
+ *
+ * This is what stops the atlas being a set of unrelated figures: meeting the
+ * cylinder head as one callout on the engine and then opening the plate that is
+ * nothing but the head is the same move as turning to a referenced figure in a
+ * manual, and it is the main way someone goes deeper without going back to the
+ * catalog to guess.
+ */
+function DetailModuleLink({ moduleId }: { moduleId: string }) {
+  const target = findCatalogEntry(moduleId);
+  if (!target) return null;
+
+  return (
+    <Link
+      href={`/module/${target.module.id}`}
+      className="group flex items-center justify-between gap-3 border border-hairline px-4 py-3 transition-colors hover:border-ink"
+    >
+      <span>
+        <span className="plate-tag block">Shown in full on</span>
+        <span className="plate-display mt-1 block text-[15px] leading-none text-ink">
+          {target.module.name}
+        </span>
+      </span>
+      <ArrowUpRight
+        size={15}
+        strokeWidth={1.75}
+        className="shrink-0 text-graphite transition-colors group-hover:text-ink"
+      />
+    </Link>
   );
 }
 

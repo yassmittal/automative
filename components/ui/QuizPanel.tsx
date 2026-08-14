@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ArrowRight, Check, RotateCcw, X } from "lucide-react";
-import type { Module } from "@/content/types";
+import type { CatalogEntry } from "@/lib/catalog";
 import { atlas, useAtlas } from "@/lib/store";
 import { annotationScreen } from "../scene/Annotation";
 
@@ -13,7 +13,8 @@ import { annotationScreen } from "../scene/Annotation";
  * Feedback opens on whichever half of the plate the answer is *not* in, so
  * the panel never lands on top of the part you were just asked to find.
  */
-export function QuizPanel({ module }: { module: Module }) {
+export function QuizPanel({ entry }: { entry: CatalogEntry }) {
+  const { module } = entry;
   const mode = useAtlas((s) => s.mode);
   const quiz = useAtlas((s) => s.quiz);
   const [side, setSide] = useState<"top" | "bottom">("bottom");
@@ -51,7 +52,7 @@ export function QuizPanel({ module }: { module: Module }) {
   const missed = module.parts.find((p) => p.id === quiz.missedId);
 
   if (quiz.phase === "done") {
-    return <Scorecard module={module} score={quiz.score} total={total} />;
+    return <Scorecard entry={entry} score={quiz.score} total={total} />;
   }
 
   return (
@@ -85,7 +86,7 @@ export function QuizPanel({ module }: { module: Module }) {
         <div className="pointer-events-auto w-full max-w-md border border-hairline bg-paper/97 p-5 shadow-[0_1px_24px_rgba(20,24,28,0.12)] backdrop-blur-sm">
           {quiz.phase === "asking" && (
             <>
-              <div className="plate-tag mb-2">Click it on the engine</div>
+              <div className="plate-tag mb-2">Click it on the model</div>
               <h2 className="plate-display text-[28px] leading-none text-ink">
                 {target?.name}
               </h2>
@@ -157,14 +158,14 @@ function Verdict({
           }`}
         >
           {correct ? (
-            <Check size={12} strokeWidth={3} color="#fcfcfb" />
+            <Check size={12} strokeWidth={3} color="var(--paper)" />
           ) : (
-            <X size={12} strokeWidth={3} color="#fcfcfb" />
+            <X size={12} strokeWidth={3} color="var(--paper)" />
           )}
         </span>
         <span
           className="plate-display text-[17px]"
-          style={{ color: correct ? "var(--color-correct)" : "var(--color-wrong)" }}
+          style={{ color: correct ? "var(--correct)" : "var(--wrong)" }}
         >
           {title}
         </span>
@@ -178,20 +179,21 @@ function Verdict({
 }
 
 function Scorecard({
-  module,
+  entry,
   score,
   total,
 }: {
-  module: Module;
+  entry: CatalogEntry;
   score: number;
   total: number;
 }) {
+  const { module } = entry;
   const pct = Math.round((score / total) * 100);
   const verdict =
     pct === 100
       ? "Every part, first go."
       : pct >= 75
-        ? "You know your way around this engine."
+        ? "You know your way around this plate."
         : pct >= 40
           ? "The big ones are landing. The accessories need another pass."
           : "Worth a lap through the legend before trying again.";
@@ -222,7 +224,7 @@ function Scorecard({
           <button
             type="button"
             onClick={atlas.exitQuiz}
-            className="flex-1 border border-hairline px-4 py-2.5 text-ink transition-colors hover:bg-wash"
+            className="flex-1 border border-hairline px-4 py-2.5 text-ink transition-colors hover:bg-paper-sunk"
           >
             <span className="plate-tag whitespace-nowrap text-ink">
               Back to the plate

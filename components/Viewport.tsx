@@ -3,7 +3,7 @@
 import { Suspense, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ACESFilmicToneMapping } from "three";
-import type { Module } from "@/content/types";
+import type { CatalogEntry } from "@/lib/catalog";
 import { useAtlas } from "@/lib/store";
 import type { AnnotationRefs } from "./scene/Annotation";
 import type { AuthoredPoint } from "./scene/Picker";
@@ -12,8 +12,8 @@ import { AnnotationOverlay } from "./ui/AnnotationOverlay";
 
 /**
  * Caps the render resolution on machines that will not enjoy a full-density
- * 77k-triangle scene. Starts conservative so the first frame is never the
- * expensive one, then settles on a ceiling once we can read the device.
+ * scene. Starts conservative so the first frame is never the expensive one,
+ * then settles on a ceiling once we can read the device.
  */
 function usePixelRatio(): [number, number] {
   // Read the device once, when the state is first created. Probing in an
@@ -28,11 +28,11 @@ function usePixelRatio(): [number, number] {
 }
 
 export function Viewport({
-  module,
+  entry,
   authoring,
   onAuthor,
 }: {
-  module: Module;
+  entry: CatalogEntry;
   authoring: boolean;
   onAuthor?: (point: AuthoredPoint) => void;
 }) {
@@ -43,7 +43,7 @@ export function Viewport({
   const ready = useAtlas((s) => s.ready);
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[radial-gradient(120%_100%_at_50%_0%,#fafcfc_0%,#eef1f3_52%,#d5dade_100%)]">
+    <div className="on-plate relative h-full w-full overflow-hidden bg-[radial-gradient(115%_95%_at_50%_18%,var(--plate)_0%,var(--plate-deep)_78%)]">
       <PlateGrid />
 
       <Canvas
@@ -61,7 +61,7 @@ export function Viewport({
       >
         <Suspense fallback={null}>
           <Scene
-            module={module}
+            entry={entry}
             refs={refs}
             authoring={authoring}
             onAuthor={onAuthor}
@@ -69,13 +69,13 @@ export function Viewport({
         </Suspense>
       </Canvas>
 
-      <AnnotationOverlay module={module} refs={refs} />
+      <AnnotationOverlay entry={entry} refs={refs} />
 
       <div
         className="pointer-events-none absolute inset-0 grid place-items-center transition-opacity duration-500"
         style={{ opacity: ready ? 0 : 1 }}
       >
-        <div className="plate-tag animate-pulse">Loading plate…</div>
+        <div className="plate-tag animate-pulse text-plate-ink">Loading plate…</div>
       </div>
     </div>
   );
@@ -86,16 +86,16 @@ function PlateGrid() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 opacity-[0.5]"
+      className="pointer-events-none absolute inset-0"
       style={{
         backgroundImage:
-          "linear-gradient(to right, #9aa4ab 1px, transparent 1px), linear-gradient(to bottom, #9aa4ab 1px, transparent 1px)",
+          "linear-gradient(to right, var(--plate-hairline) 1px, transparent 1px), linear-gradient(to bottom, var(--plate-hairline) 1px, transparent 1px)",
         backgroundSize: "56px 56px",
         maskImage:
-          "radial-gradient(120% 90% at 50% 45%, transparent 30%, black 100%)",
+          "radial-gradient(120% 90% at 50% 45%, transparent 26%, black 100%)",
         WebkitMaskImage:
-          "radial-gradient(120% 90% at 50% 45%, transparent 30%, black 100%)",
-        opacity: 0.16,
+          "radial-gradient(120% 90% at 50% 45%, transparent 26%, black 100%)",
+        opacity: 0.55,
       }}
     />
   );
