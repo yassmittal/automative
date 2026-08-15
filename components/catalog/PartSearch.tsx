@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { SYSTEMS } from "@/content/systems";
 import { searchParts } from "@/lib/catalog";
 import { SystemSwatch } from "@/components/ui/SystemSwatch";
@@ -35,6 +35,20 @@ export function PartSearch() {
           aria-label="Search every part in the atlas"
           className="t-small w-full bg-transparent text-fg outline-none placeholder:text-fg-dim"
         />
+
+        {/* Replaces the browser's own clear button, which globals.css hides —
+            see the note there. Only rendered when there is something to
+            clear, so the field is not permanently carrying a dead control. */}
+        {query && (
+          <button
+            type="button"
+            onClick={() => setQuery("")}
+            aria-label="Clear the search"
+            className="btn btn-minimal btn-icon btn-sm -mr-1.5 shrink-0"
+          >
+            <X size={13} strokeWidth={2} />
+          </button>
+        )}
       </div>
 
       {/* Results float above the page, so they take the overlay elevation

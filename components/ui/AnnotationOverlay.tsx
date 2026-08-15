@@ -43,14 +43,32 @@ export function AnnotationOverlay({
       className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ opacity: part ? 1 : 0, transition: "opacity 0.18s ease-out" }}
     >
+      {/* The leader is drawn twice: a dark casing first, then the system's
+          colour on top of it. A single stroke has to cross both the near-black
+          viewport and a bright aluminium casting on its way to the margin, and
+          no one colour is legible on both — the casing gives the coloured line
+          its own edge to sit against wherever it happens to land. */}
       <svg className="absolute inset-0 h-full w-full">
+        <polyline
+          ref={refs.lineCasing}
+          points="0,0 0,0 0,0"
+          fill="none"
+          stroke="var(--color-viewport-deep)"
+          strokeWidth="3.5"
+          strokeOpacity="0.65"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+        />
         <polyline
           ref={refs.line}
           points="0,0 0,0 0,0"
           fill="none"
-          stroke={look?.beacon ?? "var(--plate-ink)"}
-          strokeWidth="1.25"
+          stroke={look?.beacon ?? "var(--color-fg)"}
+          strokeWidth="1.5"
           strokeDasharray="120"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
         />
       </svg>
@@ -60,15 +78,22 @@ export function AnnotationOverlay({
         className="absolute top-0 left-0 whitespace-nowrap"
         style={{ willChange: "transform" }}
       >
-        {/* The label sits over the casting, so it carries its own ground
-            rather than relying on the plate showing through behind it. That
-            ground is dark, like the plate it lies on — a paper chip here would
-            punch a bright hole in the middle of the artwork. */}
-        <div className="border border-plate-hairline bg-plate-deep/85 px-2 py-1.5 backdrop-blur-[3px]">
-          <div className="plate-tag mb-0.5" style={{ color: look?.beacon }}>
+        {/* The chip carries its own opaque ground. It has to: this label lands
+            wherever the part happens to be, which is routinely on top of a
+            brightly lit casting, and a translucent chip is legible right up
+            until the model rotates under it. The left rule is the system's
+            colour, so the chip, the legend row and the balloon agree. */}
+        <div
+          className="overlay-panel border-l-[3px] px-2.5 py-1.5"
+          style={{ borderLeftColor: look?.color }}
+        >
+          <div
+            className="t-field-label mb-0.5"
+            style={{ color: look?.beacon }}
+          >
             {look?.label ?? ""}
           </div>
-          <div className="plate-display text-[15px] leading-none text-paper">
+          <div className="t-widget-title text-[15px] leading-none text-fg">
             {part?.name ?? ""}
           </div>
         </div>

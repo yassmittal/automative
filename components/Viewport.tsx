@@ -38,12 +38,16 @@ export function Viewport({
 }) {
   const label = useRef<HTMLDivElement>(null);
   const line = useRef<SVGPolylineElement>(null);
-  const refs: AnnotationRefs = useMemo(() => ({ label, line }), []);
+  const lineCasing = useRef<SVGPolylineElement>(null);
+  const refs: AnnotationRefs = useMemo(
+    () => ({ label, line, lineCasing }),
+    [],
+  );
   const dpr = usePixelRatio();
   const ready = useAtlas((s) => s.ready);
 
   return (
-    <div className="on-plate relative h-full w-full overflow-hidden bg-[radial-gradient(115%_95%_at_50%_18%,var(--plate)_0%,var(--plate-deep)_78%)]">
+    <div className="viewport-ground relative h-full w-full overflow-hidden">
       <PlateGrid />
 
       <Canvas
@@ -75,7 +79,9 @@ export function Viewport({
         className="pointer-events-none absolute inset-0 grid place-items-center transition-opacity duration-500"
         style={{ opacity: ready ? 0 : 1 }}
       >
-        <div className="plate-tag animate-pulse text-plate-ink">Loading plate…</div>
+        <div className="t-field-label animate-pulse text-fg-dim">
+          Loading plate…
+        </div>
       </div>
     </div>
   );
@@ -89,13 +95,13 @@ function PlateGrid() {
       className="pointer-events-none absolute inset-0"
       style={{
         backgroundImage:
-          "linear-gradient(to right, var(--plate-hairline) 1px, transparent 1px), linear-gradient(to bottom, var(--plate-hairline) 1px, transparent 1px)",
+          "linear-gradient(to right, var(--color-edge) 1px, transparent 1px), linear-gradient(to bottom, var(--color-edge) 1px, transparent 1px)",
         backgroundSize: "56px 56px",
         maskImage:
           "radial-gradient(120% 90% at 50% 45%, transparent 26%, black 100%)",
         WebkitMaskImage:
           "radial-gradient(120% 90% at 50% 45%, transparent 26%, black 100%)",
-        opacity: 0.55,
+        opacity: 0.3,
       }}
     />
   );

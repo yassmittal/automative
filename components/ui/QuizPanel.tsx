@@ -61,21 +61,19 @@ export function QuizPanel({ entry }: { entry: CatalogEntry }) {
     <>
       {/* Progress rail, always at the top — it never moves. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-center p-3">
-        <div className="pointer-events-auto flex items-center gap-4 border border-hairline bg-paper/95 px-4 py-2 shadow-sm backdrop-blur-sm">
-          <span className="plate-tag">
+        <div className="overlay-panel pointer-events-auto flex items-center gap-3 py-1.5 pr-1.5 pl-4">
+          <span className="t-field-label">
             Question {quiz.index + 1} / {total}
           </span>
-          <span className="h-3 w-px bg-hairline" />
-          <span className="font-mono text-[11px] tabular-nums text-ink">
-            {quiz.score} correct
-          </span>
+          <span aria-hidden className="h-4 w-px bg-edge" />
+          <span className="t-code text-fg">{quiz.score} correct</span>
           <button
             type="button"
             onClick={atlas.exitQuiz}
-            className="ml-1 flex items-center gap-1 text-graphite transition-colors hover:text-ink"
+            className="btn btn-minimal btn-sm"
           >
             <X size={12} strokeWidth={2} />
-            <span className="plate-tag">Leave</span>
+            Leave
           </button>
         </div>
       </div>
@@ -85,16 +83,14 @@ export function QuizPanel({ entry }: { entry: CatalogEntry }) {
           side === "top" ? "top-14" : "bottom-0"
         }`}
       >
-        <div className="pointer-events-auto w-full max-w-md border border-hairline bg-paper/97 p-5 shadow-[0_1px_24px_rgba(20,24,28,0.12)] backdrop-blur-sm">
+        <div className="overlay-surface pointer-events-auto w-full max-w-md p-5">
           {quiz.phase === "asking" && (
             <>
-              <div className="plate-tag mb-2">Click it on the model</div>
-              <h2 className="plate-display text-[28px] leading-none text-ink">
+              <div className="t-field-label mb-2">Click it on the model</div>
+              <h2 className="t-page-title text-[28px] text-fg">
                 {target?.name}
               </h2>
-              <p className="mt-3 text-[13px] leading-relaxed text-graphite">
-                {target?.summary}
-              </p>
+              <p className="t-small mt-3 text-fg-muted">{target?.summary}</p>
             </>
           )}
 
@@ -120,17 +116,17 @@ export function QuizPanel({ entry }: { entry: CatalogEntry }) {
             />
           )}
 
+          {/* Once a question is answered there is exactly one thing to do, and
+              the button says so: full width, filled, focused. */}
           {answered && (
             <button
               type="button"
               onClick={atlas.nextQuestion}
               autoFocus
-              className="mt-4 flex w-full items-center justify-center gap-2 bg-ink px-4 py-2.5 text-paper transition-colors hover:bg-graphite"
+              className="btn btn-primary btn-lg btn-block mt-4"
             >
-              <span className="plate-tag text-paper">
-                {quiz.index + 1 >= total ? "See score" : "Next part"}
-              </span>
-              <ArrowRight size={13} strokeWidth={2} />
+              {quiz.index + 1 >= total ? "See score" : "Next part"}
+              <ArrowRight size={14} strokeWidth={2} />
             </button>
           )}
         </div>
@@ -160,22 +156,20 @@ function Verdict({
           }`}
         >
           {correct ? (
-            <Check size={12} strokeWidth={3} color="var(--paper)" />
+            <Check size={12} strokeWidth={3} color="#ffffff" />
           ) : (
-            <X size={12} strokeWidth={3} color="var(--paper)" />
+            <X size={12} strokeWidth={3} color="#ffffff" />
           )}
         </span>
         <span
-          className="plate-display text-[17px]"
+          className="t-widget-title"
           style={{ color: correct ? "var(--correct)" : "var(--wrong)" }}
         >
           {title}
         </span>
       </div>
-      <p className="text-[14px] leading-relaxed text-ink">{body}</p>
-      {detail && (
-        <p className="mt-2 text-[13px] leading-relaxed text-graphite">{detail}</p>
-      )}
+      <p className="t-body text-fg">{body}</p>
+      {detail && <p className="t-small mt-2 text-fg-muted">{detail}</p>}
     </>
   );
 }
@@ -201,36 +195,37 @@ function Scorecard({
           : "Worth a lap through the legend before trying again.";
 
   return (
-    <div className="absolute inset-0 z-30 grid place-items-center bg-paper/75 p-6 backdrop-blur-md">
-      <div className="plate-rise w-full max-w-sm border border-hairline bg-paper p-7 shadow-[0_2px_40px_rgba(20,24,28,0.14)]">
-        <div className="plate-tag">Result</div>
+    <div className="absolute inset-0 z-30 grid place-items-center bg-[color-mix(in_srgb,var(--color-viewport-deep)_78%,transparent)] p-6 backdrop-blur-md">
+      <div className="console-rise overlay-surface w-full max-w-sm p-7">
+        <div className="t-field-label">Result</div>
 
         <div className="mt-3 flex items-baseline gap-2">
-          <span className="plate-display text-[64px] leading-none text-ink tabular-nums">
+          <span className="t-page-title text-[64px] leading-none text-fg tabular-nums">
             {score}
           </span>
-          <span className="font-mono text-[15px] text-graphite">/ {total}</span>
+          <span className="t-code text-[15px] text-fg-dim">/ {total}</span>
         </div>
 
-        <p className="mt-3 text-[14px] leading-relaxed text-ink">{verdict}</p>
+        <p className="t-body mt-3 text-fg-muted">{verdict}</p>
 
+        {/* Running it again is what this screen is for; going back is merely
+            allowed. One filled, one bordered — never two of either. */}
         <div className="mt-6 flex gap-2">
           <button
             type="button"
             onClick={() => atlas.startQuiz(module.parts.map((p) => p.id))}
-            className="flex flex-1 items-center justify-center gap-2 bg-ink px-4 py-2.5 text-paper transition-colors hover:bg-graphite"
+            autoFocus
+            className="btn btn-primary btn-lg flex-1"
           >
-            <RotateCcw size={13} strokeWidth={2} />
-            <span className="plate-tag text-paper">Try again</span>
+            <RotateCcw size={14} strokeWidth={2} />
+            Try again
           </button>
           <button
             type="button"
             onClick={atlas.exitQuiz}
-            className="flex-1 border border-hairline px-4 py-2.5 text-ink transition-colors hover:bg-paper-sunk"
+            className="btn btn-lg flex-1"
           >
-            <span className="plate-tag whitespace-nowrap text-ink">
-              Back to the plate
-            </span>
+            Back to the plate
           </button>
         </div>
 
@@ -240,10 +235,10 @@ function Scorecard({
           href={AUTHOR.repoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mt-6 flex items-center gap-2 border-t border-hairline pt-4 text-graphite transition-colors hover:text-ink"
+          className="group mt-6 flex items-center gap-2 border-t border-edge pt-4 text-fg-dim transition-colors hover:text-fg"
         >
           <GithubMark size={14} />
-          <span className="plate-tag transition-colors group-hover:text-ink">
+          <span className="t-label">
             Built by {AUTHOR.name} — read the source
           </span>
           <ArrowUpRight

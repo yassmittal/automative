@@ -13,19 +13,18 @@ export function SectionSlider() {
 
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center p-4">
-      <div className="pointer-events-auto flex items-center gap-3 border border-hairline bg-paper/90 px-3 py-2 shadow-sm backdrop-blur-sm">
+      <div className="overlay-panel pointer-events-auto flex items-center gap-3 px-2 py-1.5">
+        {/* A tool toggle, so it lives on the minimal rung and states its own
+            on-ness with the cut's colour rather than with a filled ground. */}
         <button
           type="button"
           onClick={atlas.toggleSection}
           aria-pressed={sectionOn}
-          className={`flex items-center gap-1.5 px-1.5 py-1 transition-colors ${
-            sectionOn ? "text-cut" : "text-graphite hover:text-ink"
-          }`}
+          className="btn btn-minimal btn-sm"
+          style={sectionOn ? { color: "var(--color-cut)" } : undefined}
         >
-          <Scissors size={13} strokeWidth={1.75} />
-          <span className="plate-tag" style={{ color: "inherit" }}>
-            Section
-          </span>
+          <Scissors size={13} strokeWidth={2} />
+          Section
         </button>
 
         <input
@@ -36,10 +35,10 @@ export function SectionSlider() {
           value={section}
           onChange={(e) => atlas.setSection(Number(e.target.value))}
           aria-label="Sweep the section cut through the model"
-          className="section-range h-1 w-32 cursor-ew-resize appearance-none bg-hairline outline-none sm:w-52"
+          className="section-range w-32 cursor-ew-resize sm:w-52"
         />
 
-        <span className="w-9 text-right font-mono text-[10px] tabular-nums text-graphite">
+        <span className="t-code w-9 text-right text-fg-dim">
           {Math.round(section * 100)}%
         </span>
       </div>

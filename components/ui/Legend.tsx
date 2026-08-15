@@ -22,8 +22,8 @@ export function Legend({ entry }: { entry: CatalogEntry }) {
   if (mode === "quiz") {
     return (
       <div className="p-5">
-        <div className="plate-tag mb-3">Legend</div>
-        <p className="text-[13px] leading-relaxed text-graphite">
+        <div className="t-field-label mb-3">Legend</div>
+        <p className="t-small text-fg-muted">
           Hidden while the quiz is running. Finish or leave the quiz to get the
           part names back.
         </p>
@@ -32,9 +32,9 @@ export function Legend({ entry }: { entry: CatalogEntry }) {
   }
 
   return (
-    <div className="plate-scroll h-full overflow-y-auto overscroll-contain">
-      <div className="px-5 pt-5 pb-3">
-        <div className="plate-tag">Legend</div>
+    <div className="console-scroll h-full overflow-y-auto overscroll-contain">
+      <div className="px-4 pt-4 pb-3">
+        <div className="t-field-label">Legend</div>
       </div>
 
       {groupBySystem(module.parts).map(([system, parts]) => {
@@ -50,13 +50,11 @@ export function Legend({ entry }: { entry: CatalogEntry }) {
             style={{ borderLeftColor: look.color }}
           >
             <h3
-              className="sticky top-0 z-10 flex items-center gap-2 border-y border-hairline/60 px-4 py-1.5 backdrop-blur-sm"
-              style={{
-                background: `color-mix(in srgb, ${look.soft} 82%, transparent)`,
-              }}
+              className="sticky top-0 z-10 flex items-center gap-2 border-y border-edge px-4 py-1.5"
+              style={{ background: look.soft }}
             >
               <SystemSwatch system={system} size={14} />
-              <span className="plate-tag" style={{ color: look.ink }}>
+              <span className="t-label" style={{ color: look.ink }}>
                 {look.label}
               </span>
             </h3>
@@ -81,22 +79,26 @@ export function Legend({ entry }: { entry: CatalogEntry }) {
                           : warm
                             ? look.soft
                             : "transparent",
-                        color: active ? "var(--paper)" : "var(--ink)",
+                        // The mark is a *light* colour — it is tuned to read
+                        // against a dark ground, not to sit behind pale text.
+                        // A selected row therefore flips to dark ink, which is
+                        // the only legible thing to print on it.
+                        color: active
+                          ? "var(--color-viewport)"
+                          : "var(--color-fg)",
                       }}
                     >
                       <span
-                        className="font-mono text-[11px] tabular-nums"
+                        className="t-code"
                         style={{
                           color: active
-                            ? "color-mix(in srgb, var(--paper) 72%, transparent)"
-                            : "var(--graphite)",
+                            ? "color-mix(in srgb, var(--color-viewport) 68%, transparent)"
+                            : "var(--color-fg-dim)",
                         }}
                       >
                         {String(part.callout).padStart(2, "0")}
                       </span>
-                      <span className="text-[13.5px] leading-tight">
-                        {part.name}
-                      </span>
+                      <span className="t-body leading-tight">{part.name}</span>
                     </button>
                   </li>
                 );

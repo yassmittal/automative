@@ -8,6 +8,8 @@ import { useAtlas } from "@/lib/store";
 export type AnnotationRefs = {
   label: React.RefObject<HTMLDivElement | null>;
   line: React.RefObject<SVGPolylineElement | null>;
+  /** The dark casing drawn under `line` so it reads on a lit casting too. */
+  lineCasing: React.RefObject<SVGPolylineElement | null>;
 };
 
 /**
@@ -83,10 +85,9 @@ export function Annotator({
     const elbowY = s.y + rise;
     const endX = elbowX + dir * 48;
 
-    line.setAttribute(
-      "points",
-      `${s.x},${s.y} ${elbowX},${elbowY} ${endX},${elbowY}`,
-    );
+    const points = `${s.x},${s.y} ${elbowX},${elbowY} ${endX},${elbowY}`;
+    line.setAttribute("points", points);
+    refs.lineCasing.current?.setAttribute("points", points);
 
     label.style.transform = `translate3d(${endX}px, ${elbowY}px, 0) translate(${
       dir < 0 ? "-100%" : "0"

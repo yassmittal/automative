@@ -44,10 +44,11 @@ export type SystemLook = {
   /** Text, and the ring of an emphasised balloon. */
   ink: string;
   /**
-   * The same hue lifted bright enough to read on the dark viewport. This is
-   * what the balloon on the model wears; `color` is what the legend beside it
-   * wears on paper. Two values because they sit on grounds 30 lightness points
-   * apart, not because they are two different colours.
+   * The same hue lifted bright enough to read on the viewport, which is the
+   * darkest ground in the build. This is what the balloon on the model wears;
+   * `color` is what the legend beside it wears on the chrome surfaces. Two
+   * values because they sit on grounds that are lightness steps apart, not
+   * because they are two different colours.
    */
   beacon: string;
 };

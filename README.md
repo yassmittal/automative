@@ -141,12 +141,23 @@ The previous build wrote the values twice — once in CSS, once in GLSL — and 
 drifted, so a hue changed in one place left every balloon on the model wearing
 the old colour. That is invisible until you hold the legend against the model.
 
-**Two grounds, so two variants per system.** The chrome is paper and the
-viewport is near-black. A mark tuned to be legible on white is far too dark
-against the plate, so each system has both a `color` (on paper) and a `beacon`
-(on the plate). They are the same hue on grounds thirty lightness points apart,
-not two different colours. Legend swatches deliberately show the *beacon* on a
-dark chip, because that is what the balloon they identify actually looks like.
+**Two grounds, so two variants per system.** The chrome sits on the console's
+dark neutrals; the viewport is darker still, so that a lit aluminium casting
+has something to be brighter than. A mark tuned for the chrome is not bright
+enough against the plate, so each system has both a `color` (on chrome) and a
+`beacon` (on the plate). They are the same hue on grounds several lightness
+steps apart, not two different colours. Legend swatches deliberately show the
+*beacon* on a viewport-dark chip, because that is what the balloon they
+identify actually looks like.
+
+**The vocabulary is enforced, not remembered.** `npm run tokens:check` (part of
+`npm run lint`) asks Tailwind whether every class named in a `className`
+resolves, and checks every `var(--x)` against what `lib/paletteCss.ts` actually
+publishes. It exists because a theme migration once left ten components naming
+tokens that had been deleted: Tailwind emits no rule for an unknown utility and
+CSS drops any declaration holding an undefined `var()`, so the app built, typed,
+linted and rendered — with every surface in the plate view silently transparent
+and the part read-out lying directly on the 3D model.
 
 **The palette is searched, then verified.**
 

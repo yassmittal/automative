@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Colophon } from "@/components/catalog/Colophon";
 import { ModuleCard } from "@/components/catalog/ModuleCard";
 import { PartSearch } from "@/components/catalog/PartSearch";
@@ -10,6 +12,7 @@ export default function CatalogPage() {
   const chapters = listChaptersWithEntries();
   const entries = listCatalogEntries();
   const totalParts = entries.reduce((sum, entry) => sum + entry.partCount, 0);
+  const first = entries[0];
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[76rem] flex-col gap-6 px-4 py-6 sm:px-6">
@@ -39,8 +42,21 @@ export default function CatalogPage() {
           </div>
         </div>
 
-        <div className="max-w-[32rem]">
-          <PartSearch />
+        {/* The two ways in, side by side and ranked: know what you are after,
+            or be shown where to start. Until this button existed the catalog
+            offered five equally-weighted cards and no stated entry point,
+            which left the loudest control on the page pointing at GitHub. */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="min-w-0 flex-1 basis-[22rem]">
+            <PartSearch />
+          </div>
+
+          {first && (
+            <Link href={`/module/${first.module.id}`} className="btn btn-primary">
+              Start with {first.figure} — {first.module.name}
+              <ArrowRight size={13} strokeWidth={2} />
+            </Link>
+          )}
         </div>
       </section>
 

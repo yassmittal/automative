@@ -14,6 +14,7 @@ import { Callouts } from "./Callouts";
 import { CameraRig } from "./CameraRig";
 import { PartEmphasis } from "./PartEmphasis";
 import { Picker, type AuthoredPoint } from "./Picker";
+import { ReadingOffset } from "./ReadingOffset";
 import { SectionCut } from "./SectionCut";
 import { Stage } from "./Stage";
 
@@ -164,6 +165,8 @@ export function Scene({
         focusDistanceFor={focusDistanceFor}
         home={framing.home}
       />
+
+      <ReadingOffset />
 
       <OrbitControls
         ref={controls}

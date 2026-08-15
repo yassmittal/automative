@@ -51,11 +51,11 @@ export function Atlas({ entry }: { entry: CatalogEntry }) {
   );
 
   return (
-    <main className="flex h-dvh w-full flex-col overflow-hidden bg-paper">
+    <main className="flex h-dvh w-full flex-col overflow-hidden bg-page">
       <PlateHeader entry={entry} />
 
       <div className="flex min-h-0 flex-1">
-        <aside className="hidden w-[16rem] shrink-0 flex-col border-r border-hairline bg-paper md:flex">
+        <aside className="hidden w-[16rem] shrink-0 flex-col border-r border-edge bg-section md:flex">
           <Legend entry={entry} />
         </aside>
 
@@ -112,46 +112,46 @@ function PlateHeader({ entry }: { entry: CatalogEntry }) {
   const { module, figure } = entry;
 
   return (
-    <header className="flex shrink-0 items-center justify-between gap-4 border-b border-hairline bg-paper px-4 py-2.5">
-      <div className="flex min-w-0 items-baseline gap-3">
-        <Link
-          href="/"
-          className="flex items-center gap-1.5 text-graphite transition-colors hover:text-ink"
-        >
-          <ArrowLeft size={13} strokeWidth={1.75} />
-          <span className="plate-display text-[13px] tracking-[0.02em]">
-            Atlas
-          </span>
+    <header className="flex shrink-0 items-center justify-between gap-4 border-b border-edge bg-section px-3 py-2">
+      <div className="flex min-w-0 items-center gap-2">
+        {/* Navigation is chrome, not an action — it gets the minimal rung so
+            the one filled button in this rail is unambiguous. */}
+        <Link href="/" className="btn btn-minimal btn-sm">
+          <ArrowLeft size={13} strokeWidth={2} />
+          Atlas
         </Link>
 
-        <span className="hidden h-3 w-px bg-hairline sm:block" />
+        <span aria-hidden className="hidden h-4 w-px bg-edge sm:block" />
 
-        <span className="plate-tag hidden truncate sm:block">
-          {figure} — {module.name}
+        <span className="t-code hidden truncate text-fg-dim sm:block">
+          {figure}
+        </span>
+        <span className="t-label hidden truncate text-fg-muted sm:block">
+          {module.name}
         </span>
       </div>
 
       <div className="flex shrink-0 items-center gap-2">
-        <SourceLink label="Source" compactLabel />
+        <SourceLink label="Source" compactLabel className="btn-minimal" />
 
         {mode === "explore" ? (
+          /* The primary action of the whole plate. It is the only filled
+             control in this header, which is the entire point of the rung. */
           <button
             type="button"
             disabled={!ready}
             onClick={() => atlas.startQuiz(module.parts.map((part) => part.id))}
-            className="flex items-center gap-1.5 bg-ink px-3 py-1.5 text-paper transition-colors hover:bg-graphite disabled:opacity-40"
+            className="btn btn-primary"
           >
-            <GraduationCap size={13} strokeWidth={1.75} />
-            <span className="plate-tag text-paper">Take the quiz</span>
+            <GraduationCap size={13} strokeWidth={2} />
+            Take the quiz
           </button>
         ) : (
-          <button
-            type="button"
-            onClick={atlas.exitQuiz}
-            className="flex items-center gap-1.5 border border-hairline px-3 py-1.5 transition-colors hover:bg-paper-sunk"
-          >
-            <RotateCcw size={13} strokeWidth={1.75} />
-            <span className="plate-tag">Back to the plate</span>
+          /* Leaving the quiz is a real alternative to finishing it, not the
+             recommended path — bordered, never filled. */
+          <button type="button" onClick={atlas.exitQuiz} className="btn">
+            <RotateCcw size={13} strokeWidth={2} />
+            Back to the plate
           </button>
         )}
       </div>
@@ -165,8 +165,8 @@ function Hint() {
   if (selectedId || !ready) return null;
 
   return (
-    <div className="pointer-events-none absolute top-0 left-0 z-10 p-4">
-      <p className="max-w-[15rem] text-[12.5px] leading-relaxed text-plate-ink">
+    <div className="pointer-events-none absolute top-0 left-0 z-10 p-3">
+      <p className="overlay-panel t-small max-w-[15rem] px-3 py-2 text-fg-muted">
         Drag to rotate. Click a numbered balloon to read the part.
       </p>
     </div>

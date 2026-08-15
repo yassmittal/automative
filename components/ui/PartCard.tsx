@@ -20,36 +20,38 @@ export function PartCard({ entry }: { entry: CatalogEntry }) {
         open ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0"
       }`}
     >
+      {/* The panel is fully opaque, not a wash. It carries four paragraphs
+          over a rotating model; anything see-through here means the casting
+          drifts through the body text every time someone drags the plate. */}
       {part && look && (
-        <div className="plate-scroll pointer-events-auto m-3 max-h-[calc(100%-1.5rem)] overflow-y-auto border border-hairline bg-paper shadow-[0_2px_28px_rgba(0,0,0,0.45)]">
+        <div className="console-scroll overlay-surface pointer-events-auto m-3 max-h-[calc(100%-1.5rem)] overflow-y-auto">
           {/* The header wears the system's colour, so the card, the legend row
               and the balloon on the model all agree at a glance. */}
           <header
-            className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b-2 px-5 pt-4 pb-3 backdrop-blur-sm"
+            className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b-2 px-5 pt-4 pb-3"
             style={{
               borderBottomColor: look.color,
-              background: `color-mix(in srgb, ${look.soft} 88%, transparent)`,
+              background: look.soft,
             }}
           >
-            <div>
-              <div className="plate-tag" style={{ color: look.ink }}>
+            <div className="min-w-0">
+              <div className="t-field-label" style={{ color: look.ink }}>
                 {entry.figure} · Callout {String(part.callout).padStart(2, "0")}
               </div>
-              <h2 className="plate-display mt-1.5 text-[26px] leading-[1.05] text-ink">
-                {part.name}
-              </h2>
-              <div className="mt-1.5 text-[12px] text-graphite">
+              <h2 className="t-section-title mt-1.5 text-fg">{part.name}</h2>
+              <div className="t-small mt-1 text-fg-muted">
                 {look.label} — {look.blurb}
               </div>
             </div>
 
+            {/* Dismissal is chrome. It must never compete with the reading. */}
             <button
               type="button"
               onClick={() => atlas.select(null)}
               aria-label="Close part details"
-              className="-mr-1 shrink-0 border border-hairline bg-paper/70 p-1.5 text-graphite transition-colors hover:bg-paper hover:text-ink"
+              className="btn btn-minimal btn-icon btn-sm -mr-1 shrink-0"
             >
-              <X size={13} strokeWidth={1.75} />
+              <X size={13} strokeWidth={2} />
             </button>
           </header>
 
@@ -58,16 +60,16 @@ export function PartCard({ entry }: { entry: CatalogEntry }) {
             <Field label="Worth knowing">{part.fact}</Field>
 
             <div>
-              <div className="plate-tag mb-2">When it fails</div>
+              <div className="t-field-label mb-2">When it fails</div>
               <ul className="space-y-1.5">
                 {part.symptoms.map((symptom) => (
                   <li
                     key={symptom}
-                    className="flex gap-2.5 text-[13.5px] leading-relaxed text-ink"
+                    className="t-body flex gap-2.5 text-fg-muted"
                   >
                     <span
                       aria-hidden
-                      className="mt-[0.55em] h-px w-2.5 shrink-0 bg-graphite"
+                      className="mt-[0.7em] h-px w-2.5 shrink-0 bg-edge-strong"
                     />
                     {symptom}
                   </li>
@@ -101,18 +103,18 @@ function DetailModuleLink({ moduleId }: { moduleId: string }) {
   return (
     <Link
       href={`/module/${target.module.id}`}
-      className="group flex items-center justify-between gap-3 border border-hairline px-4 py-3 transition-colors hover:border-ink"
+      className="widget group flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:border-primary"
     >
-      <span>
-        <span className="plate-tag block">Shown in full on</span>
-        <span className="plate-display mt-1 block text-[15px] leading-none text-ink">
+      <span className="min-w-0">
+        <span className="t-field-label block">Shown in full on</span>
+        <span className="t-widget-title mt-1 block text-[15px] leading-none text-fg">
           {target.module.name}
         </span>
       </span>
       <ArrowUpRight
         size={15}
-        strokeWidth={1.75}
-        className="shrink-0 text-graphite transition-colors group-hover:text-ink"
+        strokeWidth={2}
+        className="shrink-0 text-fg-dim transition-colors group-hover:text-primary-light"
       />
     </Link>
   );
@@ -127,8 +129,8 @@ function Field({
 }) {
   return (
     <div>
-      <div className="plate-tag mb-1.5">{label}</div>
-      <p className="text-[13.5px] leading-relaxed text-ink">{children}</p>
+      <div className="t-field-label mb-1.5">{label}</div>
+      <p className="t-body text-fg-muted">{children}</p>
     </div>
   );
 }

@@ -5,12 +5,12 @@ import type { SystemId } from "@/content/types";
  * How a system is shown anywhere outside the model: a dark tile carrying the
  * system's beacon colour.
  *
- * The tile is dark on purpose. The swatch's job is to say "this is what that
- * system looks like on the plate", and on the plate a system is its beacon on
- * near-black. A swatch painted in the paper-tuned mark instead would be a
- * different, darker colour from the balloon it claims to identify — and that
- * mismatch is invisible until someone holds the legend against the model,
- * which is precisely when a legend is being used.
+ * The tile takes the viewport's own ground on purpose. The swatch's job is to
+ * say "this is what that system looks like on the plate", and on the plate a
+ * system is its beacon on near-black. A swatch painted in the chrome-tuned
+ * mark instead would be a different, darker colour from the balloon it claims
+ * to identify — and that mismatch is invisible until someone holds the legend
+ * against the model, which is precisely when a legend is being used.
  */
 export function SystemSwatch({
   system,

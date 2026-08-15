@@ -73,19 +73,61 @@
   --ease-console: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-html,
-body {
-  height: 100%;
-}
+/* Global element rules live in `base` on purpose. Anything written outside a
+   layer outranks every layered rule in the cascade, including Tailwind's
+   utilities — an unlayered `:focus-visible` here silently beat `outline-none`
+   on a field and drew a second ring inside the one its wrapper was already
+   drawing. Global defaults belong at the bottom of the cascade, not the top. */
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
 
-body {
-  background: var(--color-page);
-  color: var(--color-fg);
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none;
+  body {
+    background: var(--color-page);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  /* Keyboard focus is Blueprint's: the primary blue, because focus is an
+     interactive state and blue is what interactive means here. Every ground on
+     the console is dark, so one ring colour reads on all of them — which is the
+     dividend of dropping the light chrome. */
+  :focus-visible {
+    outline: 2px solid var(--color-primary-light);
+    outline-offset: 1px;
+    border-radius: var(--radius-control);
+  }
+
+  /* A field that lives inside a wrapper does not draw its own ring — the
+     wrapper draws one for the pair. Two rings on one control is the bug, not
+     the styling. */
+  .input-shell :focus-visible {
+    outline: none;
+  }
+
+  /* The browser's own search decorations are drawn in the platform's chrome
+     colours, which on this ground means a bright white cross sitting inside a
+     dark field. A console that styles every other control and then defers to
+     the OS for one of them looks unfinished at exactly the spot the eye is
+     already resting. The clear affordance is rebuilt in PartSearch. */
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration {
+    appearance: none;
+    display: none;
+  }
+
+  ::selection {
+    background: var(--color-primary);
+    color: #ffffff;
+  }
 }
 
 /* These live in the components layer so a Tailwind utility beside them still
@@ -189,6 +231,19 @@ body {
   /* ------------------------------------------------------------------
      Controls. All 32px tall, all 3px radius, all 12px/600 labels — a row
      of mixed buttons has to line up on both edges without anyone measuring.
+
+     There are exactly four rungs, and a control picks one by what it *is*,
+     never by how a layout wanted it to look:
+
+       btn-primary   the one thing this view wants you to do next. At most
+                     one per view. Filled, so it wins on sight alone.
+       btn           a real alternative to the primary — reversible, equally
+                     legitimate, just not the recommended path. Bordered.
+       btn-minimal   chrome: dismiss, leave, back, toggle. No ground until
+                     you touch it, so a toolbar is not a wall of boxes.
+       btn-danger    destroys something. Nothing else is red.
+
+     A view with no primary is a view that has not decided what it is for.
      ------------------------------------------------------------------ */
 
   .btn {
@@ -271,6 +326,35 @@ body {
     color: var(--color-fg);
   }
 
+  /* Two sizes off the 32px default, and no more. `sm` is for chrome packed
+     into a header rail; `lg` is for the one button a modal exists to offer. */
+  .btn-sm {
+    min-height: 26px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+
+  .btn-lg {
+    min-height: 40px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  /* An icon-only control still has to be square and still has to line up with
+     the labelled buttons beside it. */
+  .btn-icon {
+    padding: 0;
+    width: 32px;
+  }
+  .btn-icon.btn-sm {
+    width: 26px;
+  }
+
+  .btn-block {
+    display: flex;
+    width: 100%;
+  }
+
   .input {
     width: 100%;
     min-height: 32px;
@@ -290,11 +374,15 @@ body {
     color: var(--color-fg-dim);
   }
 
+  /* One ring per field, drawn on whatever the user perceives as the field —
+     the input itself when it stands alone, the shell when it wraps one. The
+     tint is mixed from the primary rather than hand-written as an rgba, so a
+     change to the intent colour reaches the focus ring with it. */
   .input:focus,
   .input-shell:focus-within {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(19, 124, 189, 0.16);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 22%, transparent);
   }
 
   /* A field that wraps its own input — a search box with an icon in it. Takes
@@ -313,6 +401,60 @@ body {
       box-shadow 0.12s ease-out;
   }
 
+  /* ------------------------------------------------------------------
+     Over the viewport
+
+     Chrome that floats on top of the model is a different problem from chrome
+     that sits on the page: behind it is not a known ground but a photographed
+     aluminium casting that is bright in places and near-black in others. The
+     rule is therefore the opposite of the rest of the console — these surfaces
+     bring their own opaque ground and are never allowed to be see-through,
+     because "mostly transparent" means "legible until the model rotates".
+     ------------------------------------------------------------------ */
+
+  /* A floating strip or chip: the section sweep, the quiz rail, a callout
+     label. Opaque enough to own its pixels, blurred so the casting behind it
+     reads as depth rather than as noise coming through the text. */
+  .overlay-panel {
+    background: color-mix(in srgb, var(--color-viewport-deep) 92%, transparent);
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-widget);
+    box-shadow: var(--shadow-overlay);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* A read-out that has to carry paragraphs over the model. Fully opaque: a
+     tint of the casting behind a body of text is the single worst thing this
+     interface can do, and it is what a translucent panel guarantees. */
+  .overlay-surface {
+    background: var(--color-section);
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-widget);
+    box-shadow: var(--shadow-overlay);
+  }
+
+  /* The viewport itself: the darkest ground in the build, so that a lit metal
+     casting has something to be brighter than. */
+  .viewport-ground {
+    background: radial-gradient(
+      115% 95% at 50% 18%,
+      var(--color-viewport) 0%,
+      var(--color-viewport-deep) 78%
+    );
+  }
+
+  /* How a system is shown outside the model: its beacon colour on the
+     viewport's own ground, so the swatch is lit the way the balloon it stands
+     for is lit. */
+  .system-swatch {
+    display: inline-grid;
+    place-items: center;
+    border-radius: 2px;
+    background: var(--color-viewport);
+    border: 1px solid var(--color-edge);
+  }
+
   /* A compact status chip. Carries its own colour through `currentColor`, so a
      caller sets one property and the tint follows. */
   .tag {
@@ -327,21 +469,6 @@ body {
     line-height: 1.4;
     letter-spacing: 0.01em;
   }
-}
-
-/* Keyboard focus is Blueprint's: the primary blue, because focus is an
-   interactive state and blue is what interactive means here. Every ground on
-   the console is dark, so one ring colour reads on all of them — which is the
-   dividend of dropping the light chrome. */
-:focus-visible {
-  outline: 2px solid var(--color-primary-light);
-  outline-offset: 1px;
-  border-radius: var(--radius-control);
-}
-
-::selection {
-  background: var(--color-primary);
-  color: #ffffff;
 }
 
 /* Scrollbars matched to the console rather than the OS. */

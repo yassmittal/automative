@@ -48,21 +48,21 @@ export function AuthoringPanel({
   const done = Object.keys(authored).length;
 
   return (
-    <div className="absolute top-0 right-0 z-40 m-3 flex max-h-[calc(100%-1.5rem)] w-72 flex-col border border-cut bg-paper/97 shadow-lg backdrop-blur-sm">
-      <header className="border-b border-hairline px-4 py-3">
+    <div className="overlay-surface absolute top-0 right-0 z-40 m-3 flex max-h-[calc(100%-1.5rem)] w-72 flex-col border-cut">
+      <header className="border-b border-edge px-4 py-3">
         <div className="flex items-center gap-1.5">
           <Crosshair size={12} strokeWidth={2} className="text-cut" />
-          <span className="plate-tag" style={{ color: "var(--cut)" }}>
+          <span className="t-field-label" style={{ color: "var(--cut)" }}>
             Authoring
           </span>
         </div>
-        <p className="mt-1.5 text-[12px] leading-snug text-graphite">
+        <p className="t-small mt-1.5 text-fg-muted">
           Pick a part, then click it on the model. {done} of{" "}
           {module.parts.length} placed.
         </p>
       </header>
 
-      <ul className="plate-scroll flex-1 overflow-y-auto">
+      <ul className="console-scroll flex-1 overflow-y-auto">
         {module.parts.map((part) => {
           const armed = armedId === part.id;
           const value = authored[part.id];
@@ -72,20 +72,22 @@ export function AuthoringPanel({
                 type="button"
                 onClick={() => onArm(armed ? null : part.id)}
                 className={`flex w-full flex-col gap-0.5 px-4 py-1.5 text-left transition-colors ${
-                  armed ? "bg-cut text-paper" : "hover:bg-paper-sunk"
+                  armed
+                    ? "bg-cut text-viewport"
+                    : "text-fg-muted hover:bg-widget hover:text-fg"
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <span className="font-mono text-[10px] tabular-nums opacity-70">
+                  <span className="t-code opacity-70">
                     {String(part.callout).padStart(2, "0")}
                   </span>
-                  <span className="text-[13px]">{part.name}</span>
+                  <span className="t-body">{part.name}</span>
                   {value && !armed && (
                     <Check size={11} strokeWidth={2.5} className="text-correct" />
                   )}
                 </span>
                 {value && (
-                  <span className="font-mono text-[10px] tabular-nums opacity-60">
+                  <span className="t-code opacity-60">
                     [{value.join(", ")}]
                   </span>
                 )}
@@ -95,27 +97,21 @@ export function AuthoringPanel({
         })}
       </ul>
 
-      <footer className="flex gap-2 border-t border-hairline p-3">
+      <footer className="flex gap-2 border-t border-edge p-3">
         <button
           type="button"
           onClick={copy}
-          className="flex flex-1 items-center justify-center gap-1.5 bg-ink px-3 py-2 text-paper transition-colors hover:bg-cut"
+          className={`btn flex-1 ${copied ? "btn-success" : "btn-primary"}`}
         >
           {copied ? (
             <Check size={12} strokeWidth={2.5} />
           ) : (
             <ClipboardCopy size={12} strokeWidth={2} />
           )}
-          <span className="plate-tag text-paper">
-            {copied ? "Copied" : "Copy positions"}
-          </span>
+          {copied ? "Copied" : "Copy positions"}
         </button>
-        <button
-          type="button"
-          onClick={onReset}
-          className="border border-hairline px-3 py-2 transition-colors hover:bg-paper-sunk"
-        >
-          <span className="plate-tag">Reset</span>
+        <button type="button" onClick={onReset} className="btn">
+          Reset
         </button>
       </footer>
     </div>

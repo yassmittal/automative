@@ -34,12 +34,16 @@ export function Colophon({
             the same way you just pulled apart the engine.
           </p>
 
+          {/* Both of these are secondary on purpose. They are the only filled
+              candidates on the catalog, and a page whose loudest control sends
+              the reader to GitHub has told them the wrong thing about what it
+              is for. The primary rung on this page belongs to opening a plate. */}
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <a
               href={AUTHOR.repoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-primary"
+              className="btn"
             >
               <GithubMark size={14} />
               Read the source
