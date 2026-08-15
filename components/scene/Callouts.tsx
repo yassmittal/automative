@@ -15,9 +15,9 @@ import {
 import { SYSTEMS } from "@/content/systems";
 import {
   CORRECT,
-  PAPER,
-  PLATE_DEEP,
-  PLATE_INK,
+  FG,
+  FG_MUTED,
+  VIEWPORT_DEEP,
   WRONG,
 } from "@/content/palette";
 import type { SystemId } from "@/content/types";
@@ -36,16 +36,17 @@ type BalloonLook = { ring: string; fill: string; ink: string };
  * carry hand-mirrored hex values, and why a palette change made in one place
  * left every balloon on the model wearing the previous colour.
  *
- * Balloons sit on the near-black plate, so a system appears here as its
- * `beacon` — the bright variant — while the legend beside it uses the
- * paper-tuned `color`. Same hue, two grounds.
+ * The viewport is the darkest ground on the console, so a system appears here
+ * as its `beacon` — the brightest variant — while the legend beside it, which
+ * sits on the lighter widget ground, uses `color` and `ink`. Same hue, three
+ * grounds, one source.
  */
 const LOOKS = {
   /** Quiz mode: every balloon that is not part of the answer goes grey, so a
    *  system colour can never leak the answer. */
-  quiet: { ring: PLATE_INK, fill: PLATE_DEEP, ink: PLATE_INK },
-  correct: { ring: PAPER, fill: CORRECT, ink: PAPER },
-  wrong: { ring: PAPER, fill: WRONG, ink: PAPER },
+  quiet: { ring: FG_MUTED, fill: VIEWPORT_DEEP, ink: FG_MUTED },
+  correct: { ring: FG, fill: CORRECT, ink: FG },
+  wrong: { ring: FG, fill: WRONG, ink: FG },
 } satisfies Record<string, BalloonLook>;
 
 /**
@@ -59,9 +60,9 @@ const LOOKS = {
 function systemLooks(system: SystemId) {
   const { beacon } = SYSTEMS[system];
   return {
-    idle: { ring: beacon, fill: PLATE_DEEP, ink: beacon },
-    hover: { ring: PAPER, fill: PLATE_DEEP, ink: PAPER },
-    active: { ring: PAPER, fill: beacon, ink: PLATE_DEEP },
+    idle: { ring: beacon, fill: VIEWPORT_DEEP, ink: beacon },
+    hover: { ring: FG, fill: VIEWPORT_DEEP, ink: FG },
+    active: { ring: FG, fill: beacon, ink: VIEWPORT_DEEP },
   };
 }
 

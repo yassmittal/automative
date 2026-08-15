@@ -56,18 +56,27 @@ export type SystemDefinition = {
  * and in the legend, and applying it undamped to text would swing readability
  * around with it.
  *
- * - **color** — the mark on paper: legend rule, card header, leader line.
- * - **ink** — the same system set as text, dark enough to read at small sizes.
- * - **soft** — a wash behind a legend row or card header, with `ink` on top.
- * - **beacon** — what the balloon on the model wears. A mark tuned for white
- *   paper is far too dark against a near-black viewport, so the same hue is
- *   lifted well up the lightness axis. Two values because they sit on grounds
- *   thirty lightness points apart, not because they are two different colours.
+ * Every ground in this build is dark, so all four roles are tuned to sit on a
+ * dark surface. That is the constraint that sets their lightness: a mark has to
+ * clear 3:1 against the page, and text has to clear 4.5:1 against the widget it
+ * is printed on, which puts every role above the ground rather than below it.
+ *
+ * - **color** — the mark: legend spine, widget header rule, leader line, the
+ *   dot beside a module. Saturated and mid-light, so it reads as a rule drawn
+ *   on the surface rather than as another line of text.
+ * - **ink** — the same system set as text. Lighter and less saturated than the
+ *   mark, because a saturated hue at text size on a dark ground vibrates.
+ * - **soft** — a tint wash behind a legend row or a widget header. It sits one
+ *   step off the widget ground in lightness and carries the system's hue, so a
+ *   row's membership is legible without reading its heading.
+ * - **beacon** — what the balloon on the model wears. The viewport is darker
+ *   than any chrome surface, so the balloon is lifted further still; it is the
+ *   brightest a system ever gets.
  */
 const ROLE_RECIPES = {
-  color: { lightness: 0.55, shiftWeight: 1, chroma: 0.16 },
-  ink: { lightness: 0.42, shiftWeight: 0.4, chroma: 0.13 },
-  soft: { lightness: 0.93, shiftWeight: 0.15, chroma: 0.05 },
+  color: { lightness: 0.76, shiftWeight: 0.5, chroma: 0.17 },
+  ink: { lightness: 0.86, shiftWeight: 0.3, chroma: 0.085 },
+  soft: { lightness: 0.34, shiftWeight: 0.12, chroma: 0.075 },
   beacon: { lightness: 0.8, shiftWeight: 0.4, chroma: 0.16 },
 } as const;
 

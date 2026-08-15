@@ -25,7 +25,7 @@
  */
 
 import { listCoOccurringSystemPairs } from "../lib/catalog";
-import { PAPER, PLATE } from "../content/palette";
+import { PAGE, VIEWPORT, WIDGET } from "../content/palette";
 import { SYSTEMS } from "../content/systems";
 import type { SystemId, SystemLook } from "../content/types";
 import {
@@ -109,9 +109,9 @@ function checkContrast(failures: Failure[]): void {
   for (const [id, look] of Object.entries(SYSTEMS) as [SystemId, SystemLook][]) {
     const measurements = [
       { label: "ink on soft", value: contrastRatio(look.ink, look.soft), min: MIN_TEXT_CONTRAST },
-      { label: "ink on paper", value: contrastRatio(look.ink, PAPER), min: MIN_TEXT_CONTRAST },
-      { label: "mark on paper", value: contrastRatio(look.color, PAPER), min: MIN_MARK_CONTRAST },
-      { label: "beacon on plate", value: contrastRatio(look.beacon, PLATE), min: MIN_MARK_CONTRAST },
+      { label: "ink on widget", value: contrastRatio(look.ink, WIDGET), min: MIN_TEXT_CONTRAST },
+      { label: "mark on page", value: contrastRatio(look.color, PAGE), min: MIN_MARK_CONTRAST },
+      { label: "beacon on viewport", value: contrastRatio(look.beacon, VIEWPORT), min: MIN_MARK_CONTRAST },
     ];
 
     const failed = measurements.filter(({ value, min }) => value < min);

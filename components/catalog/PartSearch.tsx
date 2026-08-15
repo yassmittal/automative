@@ -25,22 +25,24 @@ export function PartSearch() {
 
   return (
     <div className="relative">
-      <div className="flex items-center gap-2 border border-hairline bg-paper px-3 py-2 focus-within:border-ink">
-        <Search size={14} strokeWidth={1.75} className="shrink-0 text-graphite" />
+      <div className="input-shell">
+        <Search size={14} strokeWidth={2} className="shrink-0 text-fg-dim" />
         <input
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Find a part — radiator, caliper, turbine…"
           aria-label="Search every part in the atlas"
-          className="w-full bg-transparent text-[13px] text-ink outline-none placeholder:text-graphite"
+          className="t-small w-full bg-transparent text-fg outline-none placeholder:text-fg-dim"
         />
       </div>
 
+      {/* Results float above the page, so they take the overlay elevation
+          rather than a widget's border-only depth. */}
       {isSearching && (
-        <div className="absolute top-full right-0 left-0 z-20 mt-1 max-h-[19rem] overflow-y-auto border border-hairline bg-paper shadow-lg plate-scroll">
+        <div className="console-scroll shadow-overlay absolute top-full right-0 left-0 z-20 mt-1 max-h-[19rem] overflow-y-auto rounded-[var(--radius-widget)] border border-edge bg-widget">
           {results.length === 0 ? (
-            <p className="px-3 py-3 text-[13px] text-graphite">
+            <p className="t-small px-3 py-3 text-fg-muted">
               Nothing matches “{query.trim()}”.
             </p>
           ) : (
@@ -49,14 +51,14 @@ export function PartSearch() {
                 <li key={`${entry.module.id}/${part.id}`}>
                   <Link
                     href={`/module/${entry.module.id}?part=${part.id}`}
-                    className="flex items-center gap-2.5 border-b border-hairline px-3 py-2.5 transition-colors last:border-b-0 hover:bg-paper-sunk"
+                    className="flex items-center gap-2.5 border-b border-edge px-3 py-2 transition-colors last:border-b-0 hover:bg-edge"
                   >
                     <SystemSwatch system={part.system} callout={part.callout} />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[13px] text-ink">
+                      <span className="t-label block truncate text-fg">
                         {part.name}
                       </span>
-                      <span className="plate-tag block truncate normal-case tracking-normal">
+                      <span className="t-small block truncate text-fg-dim">
                         {SYSTEMS[part.system].label} · {entry.module.name}
                       </span>
                     </span>

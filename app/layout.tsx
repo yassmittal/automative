@@ -1,24 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import { buildPaletteCss } from "@/lib/paletteCss";
 import { AUTHOR } from "@/content/author";
-import { PAPER } from "@/content/palette";
+import { PAGE } from "@/content/palette";
 import "./globals.css";
-
-const archivo = Archivo({
-  subsets: ["latin"],
-  axes: ["wdth"],
-  variable: "--font-archivo",
-  display: "swap",
-});
-
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-plex-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -32,21 +17,21 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: PAPER,
-  colorScheme: "light",
+  themeColor: PAGE,
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${archivo.variable} ${plexMono.variable}`}>
+    <html lang="en">
       <head>
         {/* The palette is computed in TypeScript so that one set of values can
             reach both the DOM and the balloon shader. This is where the DOM
             half arrives. It is inlined rather than linked because every first
             paint depends on it — a stylesheet request here would flash an
-            unstyled plate. */}
+            unstyled console. */}
         {/* Safe to inject: generated from typed constants in
             content/palette.ts, never from user input. */}
         <style dangerouslySetInnerHTML={{ __html: buildPaletteCss() }} />

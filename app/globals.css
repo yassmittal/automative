@@ -1,45 +1,76 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------
-   Car Parts Atlas — "figure plate" design system
+   Car Parts Atlas — Palantir / Blueprint operational design system
 
-   The screen is a page out of a factory service manual with a
-   photographic plate inset into it. That split is the whole idea:
+   The screen is an operations console, not a document. Everything on it
+   belongs to one of three structural units, and the whole visual system
+   is built to keep those three distinguishable at a glance:
 
-     - The chrome is paper. Near-white, hairline rules, mono for
-       anything that is data, and it never competes with the artwork.
-     - The viewport is a plate. Near-black, so an aluminium casting has
-       something dark to be lighter than, and so eleven system colours
-       can be genuinely luminous instead of merely dark.
+     - PAGE    the global backdrop. Nothing sits directly on it.
+     - SECTION a logical grouping of one workflow.
+     - WIDGET  a bordered, focused unit of work inside a section.
 
-   Colour carries meaning, not decoration: each system owns a hue and
-   wears it in the legend, on its balloon, on its part card and on its
-   leader line. Every colour below is a variable published from
-   content/palette.ts by lib/paletteCss.ts — this file names them, it
-   does not choose them. Change a hue there, and the legend and the
-   model change together.
+   Depth comes from those grounds plus a one-pixel edge, not from
+   shadow — shadow is reserved for things that genuinely float above the
+   surface (overlays, popovers, the part read-out).
+
+   Colour is semantic without exception. Blueprint's five intents mean
+   primary action, success, warning, danger and nothing else; the eleven
+   system hues mean which system a part belongs to. Every value below is
+   a variable published from content/palette.ts by lib/paletteCss.ts —
+   this file names them and assigns them jobs, it does not choose them.
    ------------------------------------------------------------------ */
 
 @theme {
-  --color-paper: var(--paper);
-  --color-paper-sunk: var(--paper-sunk);
-  --color-plate: var(--plate);
-  --color-plate-deep: var(--plate-deep);
-  --color-plate-hairline: var(--plate-hairline);
-  --color-plate-ink: var(--plate-ink);
-  --color-ink: var(--ink);
-  --color-graphite: var(--graphite);
-  --color-hairline: var(--hairline);
+  /* ------------------------------------------------------ surfaces */
+  --color-viewport: var(--viewport);
+  --color-viewport-deep: var(--viewport-deep);
+  --color-page: var(--page);
+  --color-section: var(--section);
+  --color-widget: var(--widget);
+  --color-edge: var(--edge);
+  --color-edge-strong: var(--edge-strong);
 
+  /* ----------------------------------------------------------- text */
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-dim: var(--fg-dim);
+
+  /* -------------------------------------------------------- intents */
+  --color-primary: var(--intent-primary);
+  --color-primary-hover: var(--intent-primary-hover);
+  --color-primary-light: var(--intent-primary-light);
+  --color-success: var(--intent-success);
+  --color-warning: var(--intent-warning);
+  --color-danger: var(--intent-danger);
+
+  /* Verdicts and the section tool, aliased onto the intents they mean. */
   --color-cut: var(--cut);
   --color-correct: var(--correct);
   --color-wrong: var(--wrong);
 
-  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-body: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  /* ----------------------------------------------------- typography */
+  /* Blueprint application typography: the platform's own UI face, so the
+     console reads as software rather than as a designed page, and so the
+     first paint never waits on a font request. */
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif;
+  --font-mono: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
 
-  --ease-plate: cubic-bezier(0.22, 1, 0.36, 1);
+  /* ---------------------------------------------------------- radii */
+  /* Low and tight. A control that rounds hard reads as consumer software;
+     these are the radii of something operated rather than browsed. */
+  --radius-control: 3px;
+  --radius-widget: 4px;
+  --radius-section: 6px;
+
+  /* -------------------------------------------------------- shadows */
+  --shadow-widget: 0 2px 6px rgba(0, 0, 0, 0.18);
+  --shadow-overlay: 0 10px 24px rgba(0, 0, 0, 0.28);
+
+  --ease-console: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html,
@@ -48,109 +79,316 @@ body {
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-body);
+  background: var(--color-page);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }
 
 /* These live in the components layer so a Tailwind utility beside them still
-   wins. Unlayered, `.plate-tag`'s colour beat `text-paper` and every small-caps
-   label on a dark button silently rendered graphite-on-near-black. */
+   wins — `.t-label` setting a colour must never beat `text-fg-dim` sitting on
+   the same element. */
 @layer components {
-  /* Utility label — the small caps mono tag used on every panel header.
-     Named for what it is in the manual, not what it looks like. */
-  .plate-tag {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    line-height: 1;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--color-graphite);
-  }
+  /* ------------------------------------------------------------------
+     Type scale. Seven roles, and every piece of text on the console picks
+     one. Sizes are fixed in px rather than rem because this is dense
+     application chrome: a widget header that grows with the browser's root
+     size breaks the alignment of the row of widgets beside it.
+     ------------------------------------------------------------------ */
 
-  /* Display face is Archivo's expanded width — part names read like the
-     cover of a parts catalog. Used only on part names and the wordmark. */
-  .plate-display {
-    font-family: var(--font-display);
-    font-variation-settings: "wdth" 112;
+  .t-page-title {
+    font-size: 32px;
     font-weight: 700;
-    letter-spacing: -0.015em;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
   }
 
-  /* A legend swatch, and the reason it is a dark tile rather than a plain
-     block of colour: it is showing you what the balloon on the model looks
-     like, and the balloon sits on a near-black plate. Painting the swatch in
-     the paper-tuned mark instead would make the legend and the model disagree
-     about what "cooling" looks like, which is the exact failure this palette
-     is built to avoid. */
-  .system-swatch {
+  .t-section-title {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .t-widget-title {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .t-body {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .t-small {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
+  /* Buttons, fields and tags. */
+  .t-label {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+  }
+
+  /* IDs, coordinates, counts, percentages — anything technical. Monospace
+     so a column of them aligns, tabular so they do not jitter as they tick. */
+  .t-code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.45;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* A field header inside a widget. Uppercase and tracked out so it separates
+     from the value beneath it by treatment rather than by another rule. */
+  .t-field-label {
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-dim);
+  }
+
+  /* ------------------------------------------------------------------
+     Surfaces
+     ------------------------------------------------------------------ */
+
+  .section-surface {
+    background: var(--color-section);
+    border-radius: var(--radius-section);
+    padding: 20px;
+  }
+
+  .widget {
+    background: var(--color-widget);
+    color: var(--color-fg);
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-widget);
+    padding: 16px;
+  }
+
+  .shadow-widget {
+    box-shadow: var(--shadow-widget);
+  }
+
+  .shadow-overlay {
+    box-shadow: var(--shadow-overlay);
+  }
+
+  /* ------------------------------------------------------------------
+     Controls. All 32px tall, all 3px radius, all 12px/600 labels — a row
+     of mixed buttons has to line up on both edges without anyone measuring.
+     ------------------------------------------------------------------ */
+
+  .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: var(--color-plate-deep);
-    border-radius: 2px;
+    gap: 6px;
+    min-height: 32px;
+    padding: 0 12px;
+    background: var(--color-widget);
+    color: var(--color-fg);
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-control);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    transition:
+      background-color 0.12s ease-out,
+      border-color 0.12s ease-out;
+  }
+
+  .btn:hover:not(:disabled) {
+    background: var(--color-edge);
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Intent buttons drop the border — the fill is already the strongest
+     boundary on the surface, and a second one only muddies it. */
+  .btn-primary {
+    background: var(--color-primary);
+    border-color: transparent;
+    color: #ffffff;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+  }
+
+  .btn-success {
+    background: var(--color-success);
+    border-color: transparent;
+    color: #ffffff;
+  }
+  .btn-success:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-success) 84%, black);
+  }
+
+  .btn-warning {
+    background: var(--color-warning);
+    border-color: transparent;
+    color: #ffffff;
+  }
+  .btn-warning:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-warning) 84%, black);
+  }
+
+  .btn-danger {
+    background: var(--color-danger);
+    border-color: transparent;
+    color: #ffffff;
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-danger) 84%, black);
+  }
+
+  /* Minimal: no ground until you touch it. For toolbar affordances that
+     would otherwise turn a header into a wall of boxes. */
+  .btn-minimal {
+    background: transparent;
+    border-color: transparent;
+    color: var(--color-fg-muted);
+  }
+  .btn-minimal:hover:not(:disabled) {
+    background: var(--color-widget);
+    color: var(--color-fg);
+  }
+
+  .input {
+    width: 100%;
+    min-height: 32px;
+    padding: 0 10px;
+    background: var(--color-section);
+    color: var(--color-fg);
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-control);
+    font-size: 12px;
+    line-height: 1.2;
+    transition:
+      border-color 0.12s ease-out,
+      box-shadow 0.12s ease-out;
+  }
+
+  .input::placeholder {
+    color: var(--color-fg-dim);
+  }
+
+  .input:focus,
+  .input-shell:focus-within {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(19, 124, 189, 0.16);
+  }
+
+  /* A field that wraps its own input — a search box with an icon in it. Takes
+     the input's chrome so the icon and the caret share one focus ring. */
+  .input-shell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+    padding: 0 10px;
+    background: var(--color-section);
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-control);
+    transition:
+      border-color 0.12s ease-out,
+      box-shadow 0.12s ease-out;
+  }
+
+  /* A compact status chip. Carries its own colour through `currentColor`, so a
+     caller sets one property and the tint follows. */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 7px;
+    border-radius: var(--radius-control);
+    background: color-mix(in srgb, currentColor 16%, transparent);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
   }
 }
 
-/* Keyboard focus has to stay visible on every surface the palette produces —
-   paper, near-black plate, and a legend row tinted with a system colour. A
-   single-colour ring vanishes on one of them, so it is two-tone: the box-shadow
-   fills the outline's offset gap with paper, and the ink outline sits outside
-   it. Light ground or dark, one of the two always reads. */
+/* Keyboard focus is Blueprint's: the primary blue, because focus is an
+   interactive state and blue is what interactive means here. Every ground on
+   the console is dark, so one ring colour reads on all of them — which is the
+   dividend of dropping the light chrome. */
 :focus-visible {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 2px var(--color-paper);
-  border-radius: 2px;
-}
-
-/* On the dark plate the polarity flips, or the ink outline disappears into it. */
-.on-plate :focus-visible,
-.on-plate:focus-visible {
-  outline-color: var(--color-paper);
-  box-shadow: 0 0 0 2px var(--color-plate-deep);
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 1px;
+  border-radius: var(--radius-control);
 }
 
 ::selection {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--color-primary);
+  color: #ffffff;
 }
 
-/* Thin scrollbars that match the plate rather than the OS. */
-.plate-scroll {
+/* Scrollbars matched to the console rather than the OS. */
+.console-scroll {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-hairline) transparent;
+  scrollbar-color: var(--color-edge) transparent;
 }
-.plate-scroll::-webkit-scrollbar {
-  width: 6px;
+.console-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-.plate-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-hairline);
-  border-radius: 3px;
+.console-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-edge);
+  border-radius: var(--radius-control);
+}
+.console-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-fg-dim);
 }
 
-/* Section sweep control. The thumb is the cut line, so it is the one place
-   the cut's orange shows up in the chrome. */
+/* Section sweep control. The thumb is the cut line, so it is the one place the
+   warning intent shows up in the chrome — a tool that removes material from
+   the model is exactly what "warning" is for. */
+.section-range {
+  appearance: none;
+  height: 4px;
+  background: var(--color-edge);
+  border-radius: 2px;
+  outline: none;
+}
 .section-range::-webkit-slider-thumb {
   appearance: none;
-  width: 3px;
-  height: 18px;
+  width: 4px;
+  height: 16px;
   background: var(--color-cut);
   cursor: ew-resize;
-  border-radius: 0;
+  border-radius: 1px;
 }
 .section-range::-moz-range-thumb {
-  width: 3px;
-  height: 18px;
+  width: 4px;
+  height: 16px;
   background: var(--color-cut);
   border: 0;
   cursor: ew-resize;
-  border-radius: 0;
+  border-radius: 1px;
 }
 
-@keyframes plate-rise {
+@keyframes console-rise {
   from {
     opacity: 0;
     transform: translateY(6px);
@@ -161,8 +399,8 @@ body {
   }
 }
 
-.plate-rise {
-  animation: plate-rise 0.5s var(--ease-plate) both;
+.console-rise {
+  animation: console-rise 0.4s var(--ease-console) both;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -3,14 +3,13 @@ import { AUTHOR } from "@/content/author";
 import { GithubMark } from "@/components/ui/GithubMark";
 
 /**
- * The title block, borrowed from the drawing it is imitating.
+ * The title block, borrowed from the drawing this atlas is documenting.
  *
  * Every service-manual sheet ends with a block naming who drew it and what
  * sheet you are holding, so that is the shape this takes — which is also the
- * most honest place to put the repository. It is painted on the plate rather
- * than the paper for one reason: the whole page above it is near-white, so a
- * near-black block at the foot is the single loudest thing in the layout
- * without needing a colour the palette has reserved for a system.
+ * most honest place to put the repository. It sits on the viewport ground
+ * rather than the section ground so it closes the page the way the plate opens
+ * it, without borrowing a colour the palette has reserved for a system.
  */
 export function Colophon({
   plateCount,
@@ -20,55 +19,47 @@ export function Colophon({
   partCount: number;
 }) {
   return (
-    <section className="on-plate mt-8 mb-6 bg-plate">
-      <div className="flex flex-col gap-8 p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
+    <section className="mb-2 rounded-[var(--radius-section)] border border-edge bg-viewport">
+      <div className="flex flex-col gap-6 p-5 sm:p-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
-          <p className="plate-tag text-plate-ink">Drawn by</p>
+          <p className="t-field-label">Drawn by</p>
 
-          <h2 className="plate-display mt-2.5 text-[30px] leading-none text-paper sm:text-[36px]">
-            {AUTHOR.name}
-          </h2>
+          <h2 className="t-page-title mt-2 text-fg">{AUTHOR.name}</h2>
 
-          <p className="plate-tag mt-2.5 text-plate-ink">{AUTHOR.role}</p>
+          <p className="t-label mt-1.5 text-fg-muted">{AUTHOR.role}</p>
 
-          <p className="mt-4 max-w-[34rem] text-[13.5px] leading-relaxed text-plate-ink">
+          <p className="t-body mt-4 max-w-[36rem] text-fg-muted">
             Every plate in this atlas is open source — the colour system, the
             balloon shader, the section cut, the quiz. Pull the repository apart
             the same way you just pulled apart the engine.
           </p>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-2">
             <a
               href={AUTHOR.repoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-paper px-4 py-2.5 text-ink transition-colors hover:bg-plate-ink"
+              className="btn btn-primary"
             >
-              <GithubMark size={15} />
-              <span className="plate-tag text-ink">Read the source</span>
+              <GithubMark size={14} />
+              Read the source
             </a>
 
             <a
               href={AUTHOR.profileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2 border border-plate-hairline px-4 py-2.5 transition-colors hover:border-plate-ink hover:bg-plate-hairline"
+              className="btn"
             >
-              <span className="plate-tag text-plate-ink transition-colors group-hover:text-paper">
-                @{AUTHOR.handle} on GitHub
-              </span>
-              <ArrowUpRight
-                size={14}
-                strokeWidth={1.75}
-                className="text-plate-ink transition-colors group-hover:text-paper"
-              />
+              @{AUTHOR.handle} on GitHub
+              <ArrowUpRight size={13} strokeWidth={2} />
             </a>
           </div>
         </div>
 
         {/* The sheet block. Hairline gaps rather than borders, so the rules
             read as ruled lines on a drawing instead of boxed-in cells. */}
-        <dl className="grid shrink-0 grid-cols-2 gap-px bg-plate-hairline lg:w-[19rem]">
+        <dl className="grid shrink-0 grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-widget)] bg-edge lg:w-[19rem]">
           <SheetCell term="Plates" detail={String(plateCount)} />
           <SheetCell term="Parts" detail={String(partCount)} />
           <SheetCell term="Drawn with" detail="Next.js · three.js" span />
@@ -88,9 +79,9 @@ function SheetCell({
   span?: boolean;
 }) {
   return (
-    <div className={`bg-plate px-4 py-3 ${span ? "col-span-2" : ""}`}>
-      <dt className="plate-tag text-plate-ink">{term}</dt>
-      <dd className="plate-display mt-1.5 text-[15px] text-paper">{detail}</dd>
+    <div className={`bg-widget px-4 py-3 ${span ? "col-span-2" : ""}`}>
+      <dt className="t-field-label">{term}</dt>
+      <dd className="t-label mt-1.5 text-fg">{detail}</dd>
     </div>
   );
 }

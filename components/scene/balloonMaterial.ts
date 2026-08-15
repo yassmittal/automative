@@ -2,7 +2,7 @@
 
 import { Color, DoubleSide, ShaderMaterial, type Texture } from "three";
 
-import { PAPER, PLATE_DEEP, PLATE_INK } from "@/content/palette";
+import { FG, VIEWPORT_DEEP, FG_MUTED } from "@/content/palette";
 
 /**
  * The callout balloon: a camera-facing disc that holds a constant size in
@@ -125,9 +125,9 @@ export function createBalloonMaterial(glyph: Texture) {
       uGlyph: { value: glyph },
       // Neutral to start with. The real colours are the system's own and are
       // lerped in per frame by Callouts — see LOOKS there.
-      uRing: { value: new Color(PLATE_INK) },
-      uFill: { value: new Color(PLATE_DEEP) },
-      uInk: { value: new Color(PAPER) },
+      uRing: { value: new Color(FG_MUTED) },
+      uFill: { value: new Color(VIEWPORT_DEEP) },
+      uInk: { value: new Color(FG) },
       uOpacity: { value: 1 },
       uPixelSize: { value: 30 },
       uViewportHeight: { value: 800 },

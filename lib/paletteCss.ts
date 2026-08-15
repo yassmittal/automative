@@ -16,15 +16,22 @@
 import {
   CORRECT,
   CUT,
-  GRAPHITE,
-  HAIRLINE,
-  INK,
-  PAPER,
-  PAPER_SUNK,
-  PLATE,
-  PLATE_DEEP,
-  PLATE_HAIRLINE,
-  PLATE_INK,
+  EDGE,
+  EDGE_STRONG,
+  FG,
+  FG_DIM,
+  FG_MUTED,
+  INTENT_DANGER,
+  INTENT_PRIMARY,
+  INTENT_PRIMARY_HOVER,
+  INTENT_PRIMARY_LIGHT,
+  INTENT_SUCCESS,
+  INTENT_WARNING,
+  PAGE,
+  SECTION,
+  VIEWPORT,
+  VIEWPORT_DEEP,
+  WIDGET,
   WRONG,
 } from "@/content/palette";
 import { SYSTEMS } from "@/content/systems";
@@ -39,15 +46,29 @@ export function systemCssVariable(
 }
 
 const GROUND_TOKENS: Record<string, string> = {
-  "--paper": PAPER,
-  "--paper-sunk": PAPER_SUNK,
-  "--plate": PLATE,
-  "--plate-deep": PLATE_DEEP,
-  "--plate-hairline": PLATE_HAIRLINE,
-  "--plate-ink": PLATE_INK,
-  "--ink": INK,
-  "--graphite": GRAPHITE,
-  "--hairline": HAIRLINE,
+  /* Surface hierarchy, darkest first. */
+  "--viewport": VIEWPORT,
+  "--viewport-deep": VIEWPORT_DEEP,
+  "--page": PAGE,
+  "--section": SECTION,
+  "--widget": WIDGET,
+  "--edge": EDGE,
+  "--edge-strong": EDGE_STRONG,
+
+  /* Text tiers. */
+  "--fg": FG,
+  "--fg-muted": FG_MUTED,
+  "--fg-dim": FG_DIM,
+
+  /* Blueprint intents. */
+  "--intent-primary": INTENT_PRIMARY,
+  "--intent-primary-hover": INTENT_PRIMARY_HOVER,
+  "--intent-primary-light": INTENT_PRIMARY_LIGHT,
+  "--intent-success": INTENT_SUCCESS,
+  "--intent-warning": INTENT_WARNING,
+  "--intent-danger": INTENT_DANGER,
+
+  /* Verdicts and tools, aliased onto the intents they mean. */
   "--correct": CORRECT,
   "--wrong": WRONG,
   "--cut": CUT,

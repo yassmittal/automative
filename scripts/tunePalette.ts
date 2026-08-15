@@ -22,7 +22,12 @@ import {
   SYSTEM_DEFINITIONS,
   type SystemDefinition,
 } from "../content/systems";
-import { PAPER, PLATE, RESERVED_CUT_HUE_RANGE } from "../content/palette";
+import {
+  PAGE,
+  RESERVED_CUT_HUE_RANGE,
+  VIEWPORT,
+  WIDGET,
+} from "../content/palette";
 import { listCoOccurringSystemPairs } from "../lib/catalog";
 import {
   contrastRatio,
@@ -115,10 +120,10 @@ function measureVividness(candidate: Candidate): number {
 function isReadable(looks: Record<SystemId, SystemLook>): boolean {
   return Object.values(looks).every(
     (look) =>
-      contrastRatio(look.ink, PAPER) >= MIN_TEXT_CONTRAST &&
+      contrastRatio(look.ink, WIDGET) >= MIN_TEXT_CONTRAST &&
       contrastRatio(look.ink, look.soft) >= MIN_TEXT_CONTRAST &&
-      contrastRatio(look.color, PAPER) >= MIN_MARK_CONTRAST &&
-      contrastRatio(look.beacon, PLATE) >= MIN_MARK_CONTRAST,
+      contrastRatio(look.color, PAGE) >= MIN_MARK_CONTRAST &&
+      contrastRatio(look.beacon, VIEWPORT) >= MIN_MARK_CONTRAST,
   );
 }
 

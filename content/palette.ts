@@ -91,28 +91,53 @@ export function oklchToHex(color: Oklch): string {
 /* ------------------------------------------------------------- the ground */
 
 /**
- * The chrome is a printed manual page; the viewport is a photographic plate
- * inset into it. That split is the whole visual idea, and it is why there are
- * two grounds rather than one.
+ * The surface hierarchy, in Blueprint's dark neutrals.
  *
- * The dark plate is the change that fixes the "everything looks faded" problem
- * at its root. Saturated marks on a light grey ground have nowhere to go — the
- * ground is already bright, so a colour can only get darker to stand out, and
- * darker reads as duller. Against a near-black plate the same hues can be
- * genuinely luminous, and the aluminium casting stops looking like grey putty
- * because it finally has something dark to be lighter than.
+ * Four grounds, each one step lighter than the last, and the order is the
+ * information architecture rather than a gradient for its own sake: the
+ * viewport is the darkest thing on screen because a photographed aluminium
+ * casting needs something to be lighter than; the page is the backdrop; a
+ * section groups a workflow; a widget is the focused unit of work sitting
+ * inside it. Anything that reads as a panel picks one of these four and a
+ * one-pixel `EDGE`, and depth comes from that contrast rather than from
+ * shadow — see the shadow rules in globals.css.
  */
-export const PAPER = "#fdfdfc";
-export const PAPER_SUNK = "#eef0f0";
-export const PLATE = "#0e1317";
-export const PLATE_DEEP = "#070a0d";
-export const INK = "#12171b";
-export const GRAPHITE = "#59636b";
-export const HAIRLINE = "#c8cfd2";
+export const VIEWPORT = "#10161A";
+export const VIEWPORT_DEEP = "#080c0f";
+export const PAGE = "#182026";
+export const SECTION = "#202B33";
+export const WIDGET = "#293742";
+export const EDGE = "#30404D";
 
-/** Chrome on the dark plate: rules and labels drawn over the artwork. */
-export const PLATE_HAIRLINE = "#2b353d";
-export const PLATE_INK = "#aebac2";
+/** A stronger rule than `EDGE`: hover borders, disabled controls, dividers. */
+export const EDGE_STRONG = "#5C7080";
+
+/**
+ * Text, in three tiers.
+ *
+ * The third tier is Blueprint's gray-4 rather than the gray-1 its dark palette
+ * nominally offers for secondary text. Gray-1 is a *light-theme* secondary —
+ * on the page ground it measures 2.8:1, which cannot carry a field label, let
+ * alone a sentence. Gray-4 carries the same role at 6.7:1. Gray-1 is still
+ * here, as `EDGE_STRONG`, doing the job it can actually do.
+ */
+export const FG = "#F5F8FA";
+export const FG_MUTED = "#BFCCD6";
+export const FG_DIM = "#A7B6C2";
+
+/**
+ * Blueprint intents. Each one means exactly one thing, everywhere.
+ *
+ * The rule these enforce is the design system's own: colour is semantic, so a
+ * button is blue because it is the primary action and red because it destroys
+ * something — never because a layout wanted variety.
+ */
+export const INTENT_PRIMARY = "#137CBD";
+export const INTENT_PRIMARY_HOVER = "#106BA3";
+export const INTENT_PRIMARY_LIGHT = "#2B95D6";
+export const INTENT_SUCCESS = "#0F9960";
+export const INTENT_WARNING = "#D9822B";
+export const INTENT_DANGER = "#DB3737";
 
 /**
  * Verdicts and tools, which are not systems and never take a system's hue.
@@ -122,10 +147,14 @@ export const PLATE_INK = "#aebac2";
  * colour and a system colour are never on screen at the same time. The section
  * cut is the exception that genuinely is reserved: it is a tool, it can appear
  * mid-explore alongside all eleven systems, and no system may wear its orange.
+ *
+ * All three are intent colours rather than bespoke ones, because "correct",
+ * "wrong" and "a destructive-feeling tool" are exactly what success, danger and
+ * warning already mean in this system.
  */
-export const CORRECT = "#12a150";
-export const WRONG = "#f0353b";
-export const CUT = "#ff7a1a";
+export const CORRECT = INTENT_SUCCESS;
+export const WRONG = INTENT_DANGER;
+export const CUT = INTENT_WARNING;
 
 /** Hue band the section cut owns. No system may sit inside it. */
 export const RESERVED_CUT_HUE_RANGE: [number, number] = [30, 62];
